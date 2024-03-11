@@ -3,9 +3,7 @@ package hello.core;
 import hello.core.Order.OrderService;
 import hello.core.Order.OrderServiceImpl;
 import hello.core.discount.DiscountPolicy;
-import hello.core.discount.FixDiscountPolicy;
 import hello.core.discount.RateDiscountPolicy;
-import hello.core.member.MemberRepository;
 import hello.core.member.MemberService;
 import hello.core.member.MemberServiceImpl;
 import hello.core.member.MemoryMemberRepository;
@@ -31,7 +29,7 @@ public class AppConfig {
     }
 
     @Bean
-    public MemberRepository memberRepository() {
+    public MemoryMemberRepository memberRepository() {
         return new MemoryMemberRepository();
     }
 

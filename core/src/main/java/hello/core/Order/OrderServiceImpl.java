@@ -1,19 +1,14 @@
 package hello.core.Order;
 
-import hello.core.discount.DiscountPolicy;
-import hello.core.discount.FixDiscountPolicy;
-import hello.core.discount.RateDiscountPolicy;
 import hello.core.member.Member;
-import hello.core.member.MemberRepository;
-import hello.core.member.MemberService;
-import hello.core.member.MemberServiceImpl;
+import hello.core.member.MemoryMemberRepository;
 
 public class OrderServiceImpl implements OrderService{
-    private MemberRepository memberRepository;
+    private MemoryMemberRepository memberRepository;
     // private final DiscountPolicy discountPolicy = new FixDiscountPolicy();
-    private DiscountPolicy discountPolicy;
+    private hello.core.discount.DiscountPolicy discountPolicy;
 
-    public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
+    public OrderServiceImpl(MemoryMemberRepository memberRepository, hello.core.discount.DiscountPolicy discountPolicy) {
         this.memberRepository = memberRepository;
         this.discountPolicy =  discountPolicy;
     }
