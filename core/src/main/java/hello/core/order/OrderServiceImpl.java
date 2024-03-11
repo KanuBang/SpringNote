@@ -1,4 +1,4 @@
-package hello.core.Order;
+package hello.core.order;
 
 import hello.core.member.Member;
 import hello.core.member.MemoryMemberRepository;
