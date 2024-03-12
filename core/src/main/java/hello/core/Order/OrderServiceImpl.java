@@ -7,8 +7,14 @@ import hello.core.member.MemberService;
 import hello.core.member.MemberServiceImpl;
 
 public class OrderServiceImpl implements OrderService{
-    private final MemberService memberService = new MemberServiceImpl();
-    private final DiscountPolicy discountPolicy = new FixDiscountPolicy();
+    private MemberService memberService;
+    private DiscountPolicy discountPolicy;
+
+    public OrderServiceImpl(MemberService memberService, DiscountPolicy discountPolicy) {
+        this.memberService = memberService;
+        this.discountPolicy = discountPolicy;
+    }
+
     @Override
     public Order createOrder(Long memberId, String itemName, int itemPrice) {
         Member member = memberService.findMember(memberId);
@@ -16,3 +22,5 @@ public class OrderServiceImpl implements OrderService{
         return new Order(memberId, itemName, itemPrice, discountPrice);
     }
 }
+
+
