@@ -1,5 +1,6 @@
 package hello.core;
 
+import hello.core.member.MemberRepository;
 import hello.core.order.OrderService;
 import hello.core.order.OrderServiceImpl;
 import hello.core.discount.DiscountPolicy;
@@ -18,18 +19,21 @@ public class AppConfig {
     // 이렇게 스프링 컨테이너에 등록된 객체를 스프링 빈이라 한다.
     @Bean
     public MemberService memberService() {
+        System.out.println("call AppConfig.memberService");
         return new MemberServiceImpl(memberRepository());
     }
 
     @Bean
     public OrderService orderService() {
+        System.out.println("call AppConfig.orderService");
         return new OrderServiceImpl(
                 memberRepository(), discountPolicy()
         );
     }
 
     @Bean
-    public MemoryMemberRepository memberRepository() {
+    public MemberRepository memberRepository() {
+        System.out.println("call AppConfig.memberRepository");
         return new MemoryMemberRepository();
     }
 
