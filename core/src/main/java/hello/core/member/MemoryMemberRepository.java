@@ -3,7 +3,7 @@ package hello.core.member;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MemoryMemberRepository implements MemberRepository{
+public class MemoryMemberRepository {
     private static Map<Long, Member> store = new HashMap<>();
 
     public void save(Member member) {
