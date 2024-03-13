@@ -11,20 +11,23 @@ public class StatefulServiceTest {
     @Test
     @DisplayName("싱글톤 패턴은 stateless로 설계해야 한다.")
     public void statefulServiceTest() {
-        ApplicationContext ac = new AnnotationConfigApplicationContext(StatefulService.class);
+        ApplicationContext ac = new AnnotationConfigApplicationContext(StatefulSearchService.class);
 
         // 두 변수가 같은 Bean을 공유하고 있음.
-        StatefulService statefulService1 = ac.getBean(StatefulService.class);
-        StatefulService statefulService2 = ac.getBean(StatefulService.class);
+        StatefulSearchService searchService1 = ac.getBean(StatefulSearchService.class);
+        StatefulSearchService searchService2 = ac.getBean(StatefulSearchService.class);
 
 
-        //사용자 A의 정보
-        statefulService1.order("방찬우", 10000);
-        //사용자 B의 정보
-        statefulService2.order("모드리치", 100000000);
+        //메시의 검색 내용
+        searchService1.search("메시", "호날두의 천재성");
 
-        //사용자 A는 10000원을 기대했겠지만 실상 100000000이다.
-        Assertions.assertThat(statefulService1).isNotEqualTo(10000);
+        //호날두의 검색 내용
+        searchService2.search("호날두", "메시는 멍청이");
+
+        //메시는 "호날두는 천재"라는 자신의 검색 기록을 확인할려고 했다.
+        //하지만, 어쩌다가 호날두의 검색 기록을 확인하게 되었다.
+        //싱글톤 객체가 stateful로 설계되었기 때문이다.
+        Assertions.assertThat(searchService1.getrecord()).isEqualTo("메시는 멍청이");
 
     }
 }
