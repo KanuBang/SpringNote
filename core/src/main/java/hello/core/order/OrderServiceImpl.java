@@ -10,6 +10,11 @@ public class OrderServiceImpl implements OrderService{
     // private final DiscountPolicy discountPolicy = new FixDiscountPolicy();
     private DiscountPolicy discountPolicy;
 
+    // 테스트 용도
+    public MemberRepository getMemberRepository() {
+        return memberRepository;
+    }
+
     public OrderServiceImpl(MemoryMemberRepository memberRepository, DiscountPolicy discountPolicy) {
         this.memberRepository = memberRepository;
         this.discountPolicy =  discountPolicy;
