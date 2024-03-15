@@ -1,11 +1,13 @@
 package hello.core.order;
 
+import hello.core.annotation.MainDiscountPolicy;
 import hello.core.discount.DiscountPolicy;
 import hello.core.member.Member;
 import hello.core.member.MemberRepository;
 import hello.core.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,15 +22,14 @@ public class OrderServiceImpl implements OrderService{
      */
 
     /* 의존 관계 자동 주입 시, 생서자가 1개 있으면 @Autowired 어노테이션 생략 가능 */
+
+    // DiscountPolicy discountPolicy 에서 조회 빈이 2개 이상되어 에러가 터진다.
+    // FixDiscountPolicy, RateDiscountPolicy 2개를 빈으로 등록했기 때문이다.
     @Autowired
-    public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
-        System.out.println("생성자 memberRepository: " + memberRepository);
-        System.out.println("생성자 discountPolicy: " + discountPolicy);
+    public OrderServiceImpl(MemberRepository memberRepository, @MainDiscountPolicy DiscountPolicy discountPolicy) {
         this.memberRepository = memberRepository;
         this.discountPolicy = discountPolicy;
     }
-
-
 
     /* 수정자 주입
     @Autowired
