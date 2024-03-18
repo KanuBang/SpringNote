@@ -14,9 +14,20 @@ public class OrderServiceImpl implements OrderService{
     private MemberService memberService;
     private DiscountPolicy discountPolicy;
 
-    @Autowired
     public OrderServiceImpl(MemberService memberService, DiscountPolicy discountPolicy) {
         this.memberService = memberService;
+        this.discountPolicy = discountPolicy;
+    }
+
+    @Autowired
+    public void setMemberService(MemberService memberService) {
+        System.out.println("setMemberService 호출");
+        this.memberService = memberService;
+    }
+
+    @Autowired
+    public void setDiscountPolicy(DiscountPolicy discountPolicy) {
+        System.out.println("setDiscountPolicy 호출");
         this.discountPolicy = discountPolicy;
     }
 
