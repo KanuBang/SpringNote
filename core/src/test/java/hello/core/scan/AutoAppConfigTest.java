@@ -19,7 +19,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class AutoAppConfigTest {
-
     @Test
     void basicScan() {
         ApplicationContext ac = new AnnotationConfigApplicationContext(AutoAppConfig.class);
@@ -60,9 +59,8 @@ public class AutoAppConfigTest {
         Assertions.assertThat(memberService).isInstanceOf(MemberService.class);
     }
 
-
     @Test
-    @DisplayName("타입 조회 시, 조회 빈이 2개 이상인 문제")
+    @DisplayName("아무런 중복 처리 없이 타입 조회 시, 조회 빈이 2개 이상인 문제가 발생해야만 한다.")
     void noUniqueBean() {
         org.junit.jupiter.api.Assertions.assertThrows(UnsatisfiedDependencyException.class, () -> new AnnotationConfigApplicationContext(AutoAppConfig.class));
     }
@@ -80,5 +78,14 @@ public class AutoAppConfigTest {
     void 우선순위테스트() {
         ApplicationContext ac = new AnnotationConfigApplicationContext(AutoAppConfig.class);
         Assertions.assertThat(ac.getBean(FixDiscountPolicy.class)).isInstanceOf(FixDiscountPolicy.class);
+    }
+
+
+    @Test
+    @DisplayName("annotation test")
+    void annotationTest() {
+        ApplicationContext ac = new AnnotationConfigApplicationContext(AutoAppConfig.class);
+        RateDiscountPolicy discountPolicy = ac.getBean(RateDiscountPolicy.class);
+        Assertions.assertThat(discountPolicy).isInstanceOf(RateDiscountPolicy.class);
     }
 }

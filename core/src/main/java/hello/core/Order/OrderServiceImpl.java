@@ -1,5 +1,6 @@
 package hello.core.Order;
 
+import hello.core.annotation.MainDiscountPolicy;
 import hello.core.discount.DiscountPolicy;
 import hello.core.discount.FixDiscountPolicy;
 import hello.core.member.Member;
@@ -16,7 +17,7 @@ public class OrderServiceImpl implements OrderService{
     private final MemberService memberService;
     private final DiscountPolicy discountPolicy;
 
-    public OrderServiceImpl(MemberService memberService, @Qualifier("sub") DiscountPolicy discountPolicy) {
+    public OrderServiceImpl(MemberService memberService, @MainDiscountPolicy DiscountPolicy discountPolicy) {
         this.memberService = memberService;
         this.discountPolicy = discountPolicy;
     }
