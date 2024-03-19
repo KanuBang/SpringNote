@@ -5,30 +5,28 @@ import hello.core.discount.FixDiscountPolicy;
 import hello.core.member.Member;
 import hello.core.member.MemberService;
 import hello.core.member.MemberServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OrderServiceImpl implements OrderService{
-    private MemberService memberService;
-    private DiscountPolicy discountPolicy;
+    private final MemberService memberService;
+    private final DiscountPolicy discountPolicy;
 
-    public OrderServiceImpl(MemberService memberService, DiscountPolicy discountPolicy) {
+    public OrderServiceImpl(MemberService memberService, @Qualifier("sub") DiscountPolicy discountPolicy) {
         this.memberService = memberService;
         this.discountPolicy = discountPolicy;
     }
 
-    @Autowired
-    public void setMemberService(MemberService memberService) {
-        System.out.println("setMemberService 호출");
-        this.memberService = memberService;
+    public MemberService getMemberService() {
+        return memberService;
     }
 
-    @Autowired
-    public void setDiscountPolicy(DiscountPolicy discountPolicy) {
-        System.out.println("setDiscountPolicy 호출");
-        this.discountPolicy = discountPolicy;
+    public DiscountPolicy getDiscountPolicy() {
+        return discountPolicy;
     }
 
     @Override
@@ -38,5 +36,6 @@ public class OrderServiceImpl implements OrderService{
         return new Order(memberId, itemName, itemPrice, discountPrice);
     }
 }
+
 
 
