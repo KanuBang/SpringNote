@@ -19,7 +19,7 @@ public class BeanLifeCycleTest {
     static class LifeCycleConfig {
         //이 메서드 자체를 빈 생성 + 의존관계 주입이라고 봐야 핟나.
         //이거 이후에 초기화 콜백이 사용되는 거다.
-        @Bean(initMethod = "init", destroyMethod = "close")
+        @Bean
         public NetworkClient networkClient() {
             NetworkClient networkClient = new NetworkClient();
             networkClient.setUrl("http://hello-spring.dev");
