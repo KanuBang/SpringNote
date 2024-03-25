@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class LifeCycleConfig {
-    @Bean
+    @Bean(initMethod = "init", destroyMethod = "close")
     public NetworkClient networkClient() {
         NetworkClient networkClient = new NetworkClient();
         networkClient.setUrl("htttp://naver.com");

@@ -32,13 +32,13 @@ public class NetworkClient {
         System.out.println("Disonnect: " + url);
     }
 
-    @PostConstruct
+
     public void init() {
         System.out.println("init");
         connect();
         call("초기화 메시지");
     }
-    @PreDestroy
+
     public void close (){
         System.out.println("close ");
         disconnect();
