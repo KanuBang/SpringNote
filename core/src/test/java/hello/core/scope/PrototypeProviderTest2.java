@@ -24,7 +24,7 @@ public class PrototypeProviderTest2 {
         Assertions.assertThat(count2).isEqualTo(1);
     }
 
-
+    @Scope("singleton")
     static class ClientBean {
         private ObjectProvider<PrototypeBean> prototypeBeanObjectProvider;
 

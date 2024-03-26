@@ -23,7 +23,7 @@ public class PrototypeProviderTest1 {
         Assertions.assertThat(count2).isEqualTo(1);
     }
 
-
+    @Scope("singleton")
     static class ClientBean {
         private ApplicationContext ac;
 
