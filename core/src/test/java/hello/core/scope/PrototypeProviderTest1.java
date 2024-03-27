@@ -26,18 +26,15 @@ public class PrototypeProviderTest1 {
     @Scope("singleton")
     static class ClientBean {
         private ApplicationContext ac;
-
         public ClientBean(ApplicationContext ac) {
             this.ac = ac;
         }
-
         public int logic() {
             PrototypeBean prototypeBean = ac.getBean(PrototypeBean.class);
             prototypeBean.addCount();
             int count = prototypeBean.getCount();
             return count;
         }
-
     }
 
     @Scope("prototype")

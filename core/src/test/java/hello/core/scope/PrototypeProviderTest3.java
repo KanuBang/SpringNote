@@ -2,14 +2,14 @@ package hello.core.scope;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import jakarta.inject.Provider;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
 
-public class PrototypeProviderTest2 {
+public class PrototypeProviderTest3 {
 
     @Test
     void providerTest() {
@@ -26,12 +26,12 @@ public class PrototypeProviderTest2 {
 
     @Scope("singleton")
     static class ClientBean {
-        private ObjectProvider<PrototypeBean> prototypeBeanObjectProvider;
-        public ClientBean(ObjectProvider<PrototypeBean> prototypeBeanObjectProvider) {
+        private Provider<PrototypeBean> prototypeBeanObjectProvider;
+        public ClientBean(Provider<PrototypeBean> prototypeBeanObjectProvider) {
             this.prototypeBeanObjectProvider = prototypeBeanObjectProvider;
         }
         public int logic() {
-            PrototypeBean prototypeBean = prototypeBeanObjectProvider.getObject();
+            PrototypeBean prototypeBean = prototypeBeanObjectProvider.get();
             prototypeBean.addCount();
             int count = prototypeBean.getCount();
             return count;
