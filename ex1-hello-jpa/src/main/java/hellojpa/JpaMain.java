@@ -14,18 +14,13 @@ public class JpaMain {
         tx.begin();
 
         try {
-            
-            Member member1 = em.find(Member.class, 1L);
-            System.out.println("================");
-            System.out.println(member1.getName());
 
-            // UPDATE
-            member1.setName("ronaldo");
-            System.out.println("================");
-            System.out.println(member1.getName());
+           Member member = new Member();
+           member.setId(2L);
+           member.setRoleType(RoleType.GUEST);
+           em.persist(member);
 
-            tx.commit(); // commit -> dirty checking -> flush
-
+           tx.commit();
         } catch (Exception e) {
             tx.rollback();
         } finally {

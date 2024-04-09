@@ -10,12 +10,14 @@
             <property name="jakarta.persistence.jdbc.password" value=""/>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/jpabasic"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <!-- -->
 
             <!-- 옵션 -->
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
             <property name="hibernate.use_sql_comments"  value="true"/>
             <property name="hibernate.hbm2ddl.auto" value="none" />
+            <!-- 테이블 데이터를 유지하기 위해 none을 사용 -->
         </properties>
     </persistence-unit>
 
