@@ -9,14 +9,18 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-// @Table(name = "user")
+@SequenceGenerator(
+        name = "MEMBER_SEQ_GENERATOR",
+        sequenceName = "MEMBER_SEQ",
+        initialValue = 1, allocationSize = 50
+)
 public class Member {
-
-    // @id: 영속성 컨텍스트의 1차 캐시의 key로 지정됨.
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+        generator = "MEMBER_SEQ_GENERATOR"
+    )
     private Long id;
-    // @Column(name = "username", insertable = false, nullable = false, unique = true, columnDefinition = "varchar(100)")
+
     @Column(name = "username", insertable = false, nullable = true, unique = false, columnDefinition = "varchar(100)")
     private String name;
 
