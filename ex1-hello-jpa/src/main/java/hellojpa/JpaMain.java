@@ -16,9 +16,13 @@ public class JpaMain {
         try {
 
            Member member = new Member();
-           member.setId(2L);
-           member.setRoleType(RoleType.GUEST);
+           member.setRoleType(RoleType.USER);
+           System.out.println("==================");
            em.persist(member);
+           System.out.println("IDENTITY 전략은 이때 바로 INSERT SQL을 DB에 전송하고 Id 값을 1차 캐시에 사용한다.");
+           Member found = em.find(Member.class, member.getId());
+           System.out.println("same???: " + (member == found));
+           System.out.println("==================");
 
            tx.commit();
         } catch (Exception e) {

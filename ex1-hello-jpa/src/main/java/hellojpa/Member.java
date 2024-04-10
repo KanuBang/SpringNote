@@ -14,6 +14,7 @@ public class Member {
 
     // @id: 영속성 컨텍스트의 1차 캐시의 key로 지정됨.
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     // @Column(name = "username", insertable = false, nullable = false, unique = true, columnDefinition = "varchar(100)")
     @Column(name = "username", insertable = false, nullable = true, unique = false, columnDefinition = "varchar(100)")
