@@ -1,5 +1,7 @@
 package hellojpa;
 
+import hellojpa.domain.Member;
+import hellojpa.domain.Order;
 import jakarta.persistence.*;
 
 public class JpaMain {
@@ -15,26 +17,22 @@ public class JpaMain {
 
         try {
 
-            Member member1 = new Member();
-            member1.setName("A");
-            Member member2 = new Member();
-            member2.setName("B");
-            Member member3 = new Member();
-            member3.setName("C");
+            Member member = new Member();
+            Order order = new Order();
 
-            System.out.println("==============");
+            // 영속성 컨텍스트에 저장 -> 1차 캐시
+            em.persist(member);
+            em.persist(order);
 
-            em.persist(member1);
-            em.persist(member2);
-            em.persist(member3);
-
-            System.out.println("member1 = " + member1.getId());
-            System.out.println("member2 = " + member2.getId());
-            System.out.println("member3 = " + member3.getId());
-
-            System.out.println("==============");
+            // 1차 캐시에서 값 조회
+            order.setMemberId(member.getId());
 
             tx.commit();
+
+            System.out.println("order에 있는 memberId와 entity manager를 이용해 같은 member가 조회되는지 혹인하기");
+            Member sameMember = em.find(Member.class, order.getMemberId());
+            System.out.println("same member??: "  + (member == sameMember));
+
         } catch (Exception e) {
             tx.rollback();
         } finally {
