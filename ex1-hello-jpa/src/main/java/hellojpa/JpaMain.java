@@ -18,27 +18,29 @@ public class JpaMain {
         tx.begin();
 
         try {
-            //팀 저장
-            Team team = new Team();
-            team.setName("A");
-            em.persist(team);
 
-            //회원 저장
-            Mate mate = new Mate();
-            mate.setName("ronaldo");
-            mate.setTeam(team); // 단방향 연관관계 설정, 참조 저장
-            em.persist(mate);
+            Mate mate1 = new Mate();
+            mate1.setName("son");
+            Mate mate2 = new Mate();
+            mate2.setName("romero");
 
-            //조회
-            Mate findMate = em.find(Mate.class, mate.getId());
+            Team team1 = new Team();
+            team1.setName("spurs");
 
-            //참조를 사용해서 연관관계 조회
-            Team findTeam = findMate.getTeam();
+            mate1.setTeam(team1);
+            mate2.setTeam(team1);
+            team1.getMates().add(mate1);
 
-            System.out.println("생성한 이름: " + mate.getName() + " 팀: " + team.getName());
-            System.out.println("이름: " + findMate.getName() + " 팀: " + findMate.getTeam().getName());
+            em.persist(mate1);
+            em.persist(mate2);
+            em.persist(team1);
 
             tx.commit();
+
+            //커밋한 후에 봐야 한다.
+            //역방향 참조 (onetomany)
+            Team findTeam = em.find(Team.class, team1.getId());
+            System.out.println(findTeam.getMates());
         } catch (Exception e) {
             tx.rollback();
         } finally {
