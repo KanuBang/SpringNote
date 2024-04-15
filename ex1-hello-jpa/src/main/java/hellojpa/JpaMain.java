@@ -2,6 +2,8 @@ package hellojpa;
 
 import hellojpa.domain.Member;
 import hellojpa.domain.Order;
+import hellojpa.practice.Mate;
+import hellojpa.practice.Team;
 import jakarta.persistence.*;
 
 public class JpaMain {
@@ -16,23 +18,27 @@ public class JpaMain {
         tx.begin();
 
         try {
+            //팀 저장
+            Team team = new Team();
+            team.setName("A");
+            em.persist(team);
 
-            Member member = new Member();
-            Order order = new Order();
+            //회원 저장
+            Mate mate = new Mate();
+            mate.setName("ronaldo");
+            mate.setTeam(team); // 단방향 연관관계 설정, 참조 저장
+            em.persist(mate);
 
-            // 영속성 컨텍스트에 저장 -> 1차 캐시
-            em.persist(member);
-            em.persist(order);
+            //조회
+            Mate findMate = em.find(Mate.class, mate.getId());
 
-            // 1차 캐시에서 값 조회
-            order.setMemberId(member.getId());
+            //참조를 사용해서 연관관계 조회
+            Team findTeam = findMate.getTeam();
+
+            System.out.println("생성한 이름: " + mate.getName() + " 팀: " + team.getName());
+            System.out.println("이름: " + findMate.getName() + " 팀: " + findMate.getTeam().getName());
 
             tx.commit();
-
-            System.out.println("order에 있는 memberId와 entity manager를 이용해 같은 member가 조회되는지 혹인하기");
-            Member sameMember = em.find(Member.class, order.getMemberId());
-            System.out.println("same member??: "  + (member == sameMember));
-
         } catch (Exception e) {
             tx.rollback();
         } finally {
