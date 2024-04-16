@@ -6,6 +6,8 @@ import hellojpa.practice.Mate;
 import hellojpa.practice.Team;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 public class JpaMain {
 
     public static void main(String[] args) {
@@ -20,27 +22,38 @@ public class JpaMain {
         try {
 
             Mate mate1 = new Mate();
-            mate1.setName("son");
+            mate1.setName("grimaldo");
             Mate mate2 = new Mate();
-            mate2.setName("romero");
+            mate2.setName("xhaka");
 
             Team team1 = new Team();
-            team1.setName("spurs");
+            team1.setName("bayer04");
 
             mate1.setTeam(team1);
             mate2.setTeam(team1);
-            team1.getMates().add(mate1);
 
+            // 쓰기 지연 저장소에 INSERT 쿼리가 저장됨
             em.persist(mate1);
             em.persist(mate2);
+
+            // 연관 관계 편의 메서드: 순수 객체 상태를 고려해서 양쪽에 값을 설정
+            team1.addMate(mate1);
+            team1.addMate(mate2);
             em.persist(team1);
 
+            // 1차 캐시에 없으므로 DB에서 조회 -> 1차 캐시에 정보 저장
+            Team findTeam = em.find(Team.class, team1.getId());
+
+            // 역방향 참조
+            List<Mate> mates = findTeam.getMates();
+            System.out.println("searchsearchsearchsearchsearchsearchsearchsearch");
+            for(Mate m : mates) {
+                System.out.println("m = " + m.getName());
+            }
+
+            System.out.println("commitcommitcommitcommitcommitcommitcommitcommit");
             tx.commit();
 
-            //커밋한 후에 봐야 한다.
-            //역방향 참조 (onetomany)
-            Team findTeam = em.find(Team.class, team1.getId());
-            System.out.println(findTeam.getMates());
         } catch (Exception e) {
             tx.rollback();
         } finally {
