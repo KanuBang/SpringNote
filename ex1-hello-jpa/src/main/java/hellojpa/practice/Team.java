@@ -39,4 +39,8 @@ public class Team {
     public void setName(String name) {
         this.name = name;
     }
+
+    public void addMate(Mate mate) {
+        this.getMates().add(mate);
+    }
 }

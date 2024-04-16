@@ -35,23 +35,23 @@ public class JpaMain {
             // 쓰기 지연 저장소에 INSERT 쿼리가 저장됨
             em.persist(mate1);
             em.persist(mate2);
+
+            // 연관 관계 편의 메서드: 순수 객체 상태를 고려해서 양쪽에 값을 설정
+            team1.addMate(mate1);
+            team1.addMate(mate2);
             em.persist(team1);
-
-            // 쓰기 지연 저장소에 있는 쿼리들을 DB에 반영, 동기화
-            em.flush();
-
-            // 영속성 컨텍스트 종료, 1차 캐시 종료
-            em.clear();
 
             // 1차 캐시에 없으므로 DB에서 조회 -> 1차 캐시에 정보 저장
             Team findTeam = em.find(Team.class, team1.getId());
+
             // 역방향 참조
             List<Mate> mates = findTeam.getMates();
-
+            System.out.println("searchsearchsearchsearchsearchsearchsearchsearch");
             for(Mate m : mates) {
                 System.out.println("m = " + m.getName());
             }
 
+            System.out.println("commitcommitcommitcommitcommitcommitcommitcommit");
             tx.commit();
 
         } catch (Exception e) {
