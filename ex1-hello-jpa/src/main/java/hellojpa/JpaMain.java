@@ -3,6 +3,8 @@ package hellojpa;
 import hellojpa.domain.Member;
 import hellojpa.domain.Order;
 import hellojpa.domain.OrderItem;
+import hellojpa.practice.Email;
+import hellojpa.practice.Employee;
 import hellojpa.practice.Mate;
 import hellojpa.practice.Team;
 import jakarta.persistence.*;
@@ -22,14 +24,13 @@ public class JpaMain {
 
         try {
 
-           Order order = new Order();
-           em.persist(order);
+            Email gmail = new Email();
+            em.persist(gmail);
 
-           OrderItem orderItem = new OrderItem();
-           orderItem.setOrder(order);
-           em.persist(orderItem);
-
-           order.addOrderItem(orderItem);
+            Employee employee = new Employee();
+            employee.getEmails().add(gmail);
+            gmail.setEmployee(employee);
+            em.persist(employee);
            tx.commit();
 
         } catch (Exception e) {
