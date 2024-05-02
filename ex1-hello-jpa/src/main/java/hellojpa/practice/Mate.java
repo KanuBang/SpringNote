@@ -2,7 +2,7 @@ package hellojpa.practice;
 
 import jakarta.persistence.*;
 
-@Entity
+// @Entity 잠시 지우기로
 public class Mate {
     @Id @GeneratedValue
     @Column(name = "MATE_ID")
