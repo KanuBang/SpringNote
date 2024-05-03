@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-// @Entity 잠시 지우기로
+@Entity
+@Table(name = "TEAM")
 public class Team {
 
     @Id @GeneratedValue
@@ -14,16 +15,12 @@ public class Team {
     private String name;
 
     @OneToMany(mappedBy = "team")
-    private List<Mate> mates = new ArrayList<Mate>();
+    private List<Mate> mates = new ArrayList<>();
 
-    public List<Mate> getMates() {
-        return mates;
+    public void addMate(Mate mate) {
+        mate.setTeam(this);
+        mates.add(mate);
     }
-
-    public void setMates(List<Mate> mates) {
-        this.mates = mates;
-    }
-
     public Long getId() {
         return id;
     }
@@ -40,7 +37,11 @@ public class Team {
         this.name = name;
     }
 
-    public void addMate(Mate mate) {
-        this.getMates().add(mate);
+    public List<Mate> getMates() {
+        return mates;
+    }
+
+    public void setMates(List<Mate> mates) {
+        this.mates = mates;
     }
 }

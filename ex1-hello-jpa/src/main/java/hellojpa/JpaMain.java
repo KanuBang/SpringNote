@@ -1,15 +1,8 @@
 package hellojpa;
 
-import hellojpa.domain.Member;
-import hellojpa.domain.Order;
-import hellojpa.domain.OrderItem;
-import hellojpa.practice.Email;
-import hellojpa.practice.Employee;
 import hellojpa.practice.Mate;
 import hellojpa.practice.Team;
 import jakarta.persistence.*;
-
-import java.util.List;
 
 public class JpaMain {
 
@@ -23,7 +16,15 @@ public class JpaMain {
         tx.begin();
 
         try {
+            Team team = new Team();
+            team.setName("izone");
+            em.persist(team);
 
+            Mate mate = new Mate();
+            mate.setUsername("sakura");
+            em.persist(mate);
+
+            team.addMate(mate);
 
 
            tx.commit();
