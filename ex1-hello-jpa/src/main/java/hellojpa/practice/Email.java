@@ -2,7 +2,7 @@ package hellojpa.practice;
 
 import jakarta.persistence.*;
 
-@Entity
+// @Entity
 public class Email {
 
     @Id @GeneratedValue
@@ -27,5 +27,6 @@ public class Email {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
+        employee.getEmails().add(this);
     }
 }

@@ -24,13 +24,8 @@ public class JpaMain {
 
         try {
 
-            Email gmail = new Email();
-            em.persist(gmail);
 
-            Employee employee = new Employee();
-            employee.getEmails().add(gmail);
-            gmail.setEmployee(employee);
-            em.persist(employee);
+
            tx.commit();
 
         } catch (Exception e) {

@@ -18,11 +18,11 @@ public class Member {
     private String zipcode;
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>(); // 관례
-
     public void addOrder(Order order) {
         orders.add(order);
         order.setMember(this);
     }
+
     public Long getId() {
         return id;
     }
