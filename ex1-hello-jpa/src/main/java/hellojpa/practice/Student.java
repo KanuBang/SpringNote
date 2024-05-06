@@ -7,11 +7,11 @@ public class Student {
     @Id @GeneratedValue
     @Column(name = "MEMBER_ID")
     private Long id;
-
-    @OneToOne
-    @JoinColumn(name = "LOCKER_ID", unique = true)
-    private Locker locker;
     private String username;
+
+    @OneToOne(mappedBy = "student")
+    private Locker locker;
+
 
     public void addLocker(Locker locker) {
         setLocker(locker);
@@ -26,7 +26,7 @@ public class Student {
         this.id = id;
     }
 
-    public Locker getLocker_id() {
+    public Locker getLocker() {
         return locker;
     }
 

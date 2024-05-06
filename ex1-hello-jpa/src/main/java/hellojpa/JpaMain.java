@@ -28,7 +28,7 @@ public class JpaMain {
             student.addLocker(locker);
             em.persist(student);
 
-            System.out.println(locker.getStudent().getUsername());
+            System.out.println(student.getLocker().getName());
             tx.commit();
 
         } catch (Exception e) {
