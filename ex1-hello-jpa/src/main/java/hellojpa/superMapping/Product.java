@@ -2,8 +2,8 @@ package hellojpa.superMapping;
 
 import jakarta.persistence.*;
 
-@Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+//@Entity
+//@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Product {
     @Id
     @GeneratedValue
