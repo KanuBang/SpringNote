@@ -1,6 +1,8 @@
 package hellojpa;
 
+import hellojpa.practice.Locker;
 import hellojpa.practice.Mate;
+import hellojpa.practice.Student;
 import hellojpa.practice.Team;
 import jakarta.persistence.*;
 
@@ -16,18 +18,18 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Team team = new Team();
-            team.setName("izone");
-            em.persist(team);
 
-            Mate mate = new Mate();
-            mate.setUsername("sakura");
-            em.persist(mate);
+            Locker locker = new Locker();
+            locker.setName("cs");
+            em.persist(locker);
 
-            team.addMate(mate);
+            Student student = new Student();
+            student.setUsername("messi");
+            student.addLocker(locker);
+            em.persist(student);
 
-
-           tx.commit();
+            System.out.println(locker.getStudent().getUsername());
+            tx.commit();
 
         } catch (Exception e) {
             tx.rollback();
