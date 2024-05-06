@@ -2,7 +2,7 @@ package hellojpa.practice;
 
 import jakarta.persistence.*;
 
-@Entity
+//@Entity
 public class Student {
     @Id @GeneratedValue
     @Column(name = "MEMBER_ID")

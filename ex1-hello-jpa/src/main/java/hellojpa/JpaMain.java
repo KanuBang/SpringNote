@@ -4,6 +4,7 @@ import hellojpa.practice.Locker;
 import hellojpa.practice.Mate;
 import hellojpa.practice.Student;
 import hellojpa.practice.Team;
+import hellojpa.superMapping.Movie;
 import jakarta.persistence.*;
 
 public class JpaMain {
@@ -18,17 +19,18 @@ public class JpaMain {
         tx.begin();
 
         try {
+            Movie movie = new Movie();
+            movie.setDirector("uuu");
+            movie.setActor("chris");
+            movie.setName("Avengers");
+            movie.setPrice(10000);
+            em.persist(movie);
 
-            Locker locker = new Locker();
-            locker.setName("cs");
-            em.persist(locker);
+            em.flush();
+            em.clear();
 
-            Student student = new Student();
-            student.setUsername("messi");
-            student.addLocker(locker);
-            em.persist(student);
-
-            System.out.println(student.getLocker().getName());
+            Movie findMovie = em.find(Movie.class, movie.getId());
+            System.out.println("Movie: " + findMovie.getName() + ", Director: " + findMovie.getDirector());
             tx.commit();
 
         } catch (Exception e) {
