@@ -1,25 +1,23 @@
 package hellojpa.practice;
 
-
 import jakarta.persistence.*;
 
 //@Entity
-@Table(name = "Mate")
-public class Mate {
-
+public class Student {
     @Id @GeneratedValue
     @Column(name = "MEMBER_ID")
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "TEAM_ID")
-    private Team team;
     private String username;
 
-    public void addTeam(Team team) {
-        this.team = team;
-        team.getMates().add(this);
+    @OneToOne(mappedBy = "student")
+    private Locker locker;
+
+
+    public void addLocker(Locker locker) {
+        setLocker(locker);
+        locker.setStudent(this);
     }
+
     public Long getId() {
         return id;
     }
@@ -28,12 +26,12 @@ public class Mate {
         this.id = id;
     }
 
-    public Team getTeam() {
-        return team;
+    public Locker getLocker() {
+        return locker;
     }
 
-    public void setTeam(Team team) {
-        this.team = team;
+    public void setLocker(Locker locker) {
+        this.locker = locker;
     }
 
     public String getUsername() {
