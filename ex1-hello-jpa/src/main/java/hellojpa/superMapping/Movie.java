@@ -1,8 +1,10 @@
 package hellojpa.superMapping;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @Entity
+@DiscriminatorValue("M")
 public class Movie extends Product{
     private String director;
     private String actor;
