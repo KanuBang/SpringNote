@@ -8,8 +8,10 @@ import hellojpa.practice.Locker;
 import hellojpa.practice.Mate;
 import hellojpa.practice.Student;
 import hellojpa.practice.Team;
+import hellojpa.proxyAndRelationshipManage.Phone;
 import hellojpa.superMapping.Seller;
 import jakarta.persistence.*;
+import org.hibernate.Hibernate;
 
 public class JpaMain {
 
@@ -23,35 +25,23 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Album[] album = new Album[3];
-            for(int i = 0; i < 3; i++) {
-                album[i] = new Album();
-                album[i].setName("bubble-gum" + i);
-                album[i].setPrice(30000);
-                album[i].setStackQuantity(0);
-                album[i].setArtist("newjeans" + i);
-                album[i].setEtc("ador" + i);
-                em.persist(album[i]);
-            }
-
-            Book[] books = new Book[3];
-            for(int i = 0; i < 3; i++) {
-                books[i] = new Book();
-                books[i].setAuthor("a" + i);
-                books[i].setName("name" + i);
-                books[i].setStackQuantity(3 + i + 1);
-                books[i].setPrice(3000);
-                books[i].setIsbn("432432-2342-234234324");
-                em.persist(books[i]);
-            }
+            Phone phone = new Phone();
+            phone.setName("ipad-air-3");
+            em.persist(phone);
 
             em.flush();
             em.clear();
 
-            Album findAlbum = em.find(Album.class, album[0].getId());
-            Book findBook = em.find(Book.class, books[0].getId());
-            System.out.println(findAlbum.getName());
-            System.out.println(findBook.getName());
+            Phone refPhone = em.getReference(Phone.class, phone.getId());
+            boolean isloaded = em.getEntityManagerFactory().getPersistenceUnitUtil().isLoaded(refPhone);
+
+            System.out.println("is Loaded? " + isloaded);
+            System.out.println("class: " + refPhone.getClass().getName());
+
+            // 일반적으로 프록시 객체의 속성에 접근하면 자동으로 초기화됩니다.
+            String name = phone.getName();
+            System.out.println("phone name: " + name);
+            System.out.println("class: " + refPhone.getClass().getName());
 
             tx.commit();
 

@@ -2,7 +2,7 @@ package hellojpa.superMapping;
 
 import jakarta.persistence.Entity;
 
-//@Entity
+////@Entity
 public class Solder extends BaseEntity{
     private String email;
 
