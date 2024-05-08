@@ -3,7 +3,7 @@ package hellojpa.domain;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
-//@Entity
+@Entity
 public class Movie extends Item{
     private String director;
     private String actor;

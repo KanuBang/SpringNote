@@ -2,7 +2,9 @@ package hellojpa.domain;
 
 import jakarta.persistence.*;
 
-//@Entity
+import static jakarta.persistence.FetchType.*;
+
+@Entity
 @Table(name = "DELIVERY")
 public class Delivery {
     @Id @GeneratedValue
@@ -12,7 +14,7 @@ public class Delivery {
     private String street;
     private String zipcode;
 
-    @OneToOne(mappedBy = "delivery")
+    @OneToOne(mappedBy = "delivery", fetch = LAZY)
     private Order order;
     @Enumerated
     private DeliveryStatus status;

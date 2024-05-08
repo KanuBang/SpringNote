@@ -5,14 +5,16 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Entity
+import static jakarta.persistence.FetchType.*;
+
+@Entity
 @Table(name = "CATEGORY")
 public class Category {
     @Id @GeneratedValue
     @Column(name = "category_id")
     private Long id;
     private String name;
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;
     @OneToMany(mappedBy = "parent")
