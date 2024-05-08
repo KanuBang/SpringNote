@@ -3,7 +3,7 @@ package hellojpa.practice;
 
 import jakarta.persistence.*;
 
-//@Entity
+////@Entity
 @Table(name = "Mate")
 public class Mate {
 

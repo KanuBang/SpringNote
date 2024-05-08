@@ -3,7 +3,7 @@ package hellojpa.superMapping;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
-//@Entity
+////@Entity
 public class Album extends Product{
     private String artist;
 

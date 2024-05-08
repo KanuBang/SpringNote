@@ -3,7 +3,7 @@ package hellojpa.practice;
 import hellojpa.domain.Member;
 import jakarta.persistence.*;
 
-//@Entity
+////@Entity
 public class Locker {
 
     @Id @GeneratedValue
