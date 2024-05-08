@@ -4,6 +4,8 @@ import hellojpa.domain.Album;
 import hellojpa.domain.Book;
 import hellojpa.domain.Member;
 import hellojpa.domain.Movie;
+import hellojpa.loading.Club;
+import hellojpa.loading.Player;
 import hellojpa.practice.Locker;
 import hellojpa.practice.Mate;
 import hellojpa.practice.Student;
@@ -25,23 +27,28 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Phone phone = new Phone();
-            phone.setName("ipad-air-3");
-            em.persist(phone);
 
-            em.flush();
-            em.clear();
+            Player player1 = new Player();
+            player1.setFirst_name("Cedric");
 
-            Phone refPhone = em.getReference(Phone.class, phone.getId());
-            boolean isloaded = em.getEntityManagerFactory().getPersistenceUnitUtil().isLoaded(refPhone);
+            Player player2 = new Player();
+            player2.setFirst_name("Xhaka");
 
-            System.out.println("is Loaded? " + isloaded);
-            System.out.println("class: " + refPhone.getClass().getName());
+            em.persist(player1);
+            em.persist(player2);
 
-            // 일반적으로 프록시 객체의 속성에 접근하면 자동으로 초기화됩니다.
-            String name = phone.getName();
-            System.out.println("phone name: " + name);
-            System.out.println("class: " + refPhone.getClass().getName());
+            Club club = new Club();
+            club.setName("Arsenal");
+            em.persist(club);
+
+            player1.setClub(club);
+            player2.setClub(club);
+
+            Player findPlayer = em.find(Player.class, player1.getId());
+            String findClub = findPlayer.getClub().getName(); // 지연 로딩: 엔티티에 접근하는 순간 로딩
+
+            System.out.printf("player: %s, club: %s\n", findPlayer.getFirst_name(), findClub);
+
 
             tx.commit();
 
