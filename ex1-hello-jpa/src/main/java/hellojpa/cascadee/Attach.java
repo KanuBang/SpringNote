@@ -2,7 +2,7 @@ package hellojpa.cascadee;
 
 import jakarta.persistence.*;
 
-@Entity
+//@Entity
 public class Attach {
 
     @Id @GeneratedValue

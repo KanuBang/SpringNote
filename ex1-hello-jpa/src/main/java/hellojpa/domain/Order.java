@@ -6,23 +6,26 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Entity
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.*;
+
+@Entity
 @Table(name = "ORDERS")
 public class Order {
     @Id @GeneratedValue
     @Column(name = "order_id")
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-    @OneToOne
+    @OneToOne(fetch = LAZY, cascade = ALL)
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
     private LocalDateTime orderDate;
     @Enumerated(value = EnumType.STRING)
     private OrderStatus status;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     //연관관계 편의 메서드
