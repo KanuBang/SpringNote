@@ -1,5 +1,8 @@
 package hellojpa;
 
+import hellojpa.cascadee.Attach;
+import hellojpa.cascadee.FileType;
+import hellojpa.cascadee.Post;
 import hellojpa.domain.Album;
 import hellojpa.domain.Book;
 import hellojpa.domain.Member;
@@ -28,29 +31,49 @@ public class JpaMain {
 
         try {
 
-            Player player1 = new Player();
-            player1.setFirst_name("Cedric");
+            Post post = new Post();
+            post.setName("europe travel");
 
-            Player player2 = new Player();
-            player2.setFirst_name("Xhaka");
+            Attach video = new Attach();
+            video.setAttach_type(FileType.VIDEO);
+            video.setName("in amsterdam-arena");
 
-            em.persist(player1);
-            em.persist(player2);
+            Attach image1 = new Attach();
+            image1.setAttach_type(FileType.IMAGE);
+            image1.setName("amsteradam");
 
-            Club club = new Club();
-            club.setName("Arsenal");
-            em.persist(club);
+            Attach image2 = new Attach();
+            image2.setAttach_type(FileType.IMAGE);
+            image2.setName("paris");
 
-            player1.setClub(club);
-            player2.setClub(club);
+            Attach text = new Attach();
+            text.setAttach_type(FileType.TEXT);
+            text.setName("myFirstEuTrip");
 
-            Player findPlayer = em.find(Player.class, player1.getId());
-            String findClub = findPlayer.getClub().getName(); // 지연 로딩: 엔티티에 접근하는 순간 로딩
+            post.addAttach(video);
+            post.addAttach(image1);
+            post.addAttach(image2);
+            post.addAttach(text);
 
-            System.out.printf("player: %s, club: %s\n", findPlayer.getFirst_name(), findClub);
+            System.out.println("영속성 전이 시작");
 
+            //Cascade.PERSIST
+            em.persist(post);
+
+            Attach findText = em.find(Attach.class, text.getId());
+            System.out.println("++++++++++++++++++++++++++++++++++");
+            System.out.println("found Text: " + findText.getName());
+            System.out.println("++++++++++++++++++++++++++++++++++");
+
+            //고아 객체 제거: 부모 엔티티와 연관관계가 끊어진 자식 엔티티 를 자동으로 삭제
+
+            Post findPost = em.find(Post.class, post.getId());
+            //em.remove(findPost);
+            findPost.getAttachList().remove(1);
 
             tx.commit();
+
+
 
         } catch (Exception e) {
             tx.rollback();
