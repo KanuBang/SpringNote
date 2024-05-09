@@ -7,7 +7,7 @@ import java.util.List;
 
 import static jakarta.persistence.FetchType.*;
 
-@Entity
+//@Entity
 @Table(name = "CATEGORY")
 public class Category {
     @Id @GeneratedValue

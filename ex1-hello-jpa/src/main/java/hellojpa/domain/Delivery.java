@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 import static jakarta.persistence.FetchType.*;
 
-@Entity
+//@Entity
 @Table(name = "DELIVERY")
 public class Delivery {
     @Id @GeneratedValue
