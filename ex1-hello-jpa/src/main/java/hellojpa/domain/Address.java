@@ -5,7 +5,7 @@ import jakarta.persistence.Embeddable;
 
 import java.util.Objects;
 
-@Embeddable
+//@Embeddable
 public class Address {
 
     @Column(length = 30)
