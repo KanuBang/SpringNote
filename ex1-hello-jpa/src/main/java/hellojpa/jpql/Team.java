@@ -13,6 +13,11 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private List<Member> members = new ArrayList<>();
 
+    //연관관계 편의 메서드
+    public void addMember(Member member) {
+        this.getMembers().add(member);
+        member.setTeam(this);
+    }
     public Long getId() {
         return id;
     }
