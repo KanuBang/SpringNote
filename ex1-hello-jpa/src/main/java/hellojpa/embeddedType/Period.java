@@ -4,7 +4,7 @@ import jakarta.persistence.Embeddable;
 
 import java.util.Date;
 
-@Embeddable
+//@Embeddable
 public class Period {
     private Date startDate;
     private Date endDate;

@@ -3,7 +3,7 @@ package hellojpa.embeddedType;
 import jakarta.persistence.*;
 import org.hibernate.query.sql.internal.ParameterRecognizerImpl;
 
-@Entity
+//@Entity
 public class Shipment {
 
     @Id @GeneratedValue

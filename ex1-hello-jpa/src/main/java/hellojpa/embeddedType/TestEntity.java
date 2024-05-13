@@ -4,7 +4,7 @@ import jakarta.persistence.Embeddable;
 
 import java.util.Objects;
 
-@Embeddable
+//@Embeddable
 public class TestEntity {
     private Long id;
     private String name;
