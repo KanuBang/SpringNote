@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+
 public class JpaMain {
 
     public static void main(String[] args) {
@@ -38,93 +39,73 @@ public class JpaMain {
         tx.begin();
 
         try {
+            String[] players = {"rice", "saka", "raya", "doku", "ederson", "dias", "son", "romero", "porro", "lukaku", "virtz"};
+            String[] teams = {"ars", "mc", "tot", "liv", "mu"};
+            Team[] team = new Team[teams.length];
+            int idx = 0;
 
-            Member member1 = new Member();
-            member1.setUsername("rice");
-            member1.setAddress(new Address("london", "north", "17002-1"));
-            em.persist(member1);
+            for (int i = 0; i < teams.length; i++) {
+                team[i] = new Team();
+                team[i].setName(teams[i]);
+                em.persist(team[i]);
+            }
 
-            Member member2 = new Member();
-            member2.setUsername("henry");
-            member2.setAddress(new Address("london", "north", "17002-2"));
-            em.persist(member2);
+            for (int i = 0; i < players.length; i++) {
+                Member member = new Member();
+                member.setUsername(players[i]);
+                member.setAge(i);
 
-            Member member3 = new Member();
-            member3.setUsername("antony");
-            member3.setAddress(new Address("manchester", "old", "88332-1"));
-            em.persist(member3);
-
-            Team team1 = new Team();
-            team1.setName("ARS");
-            team1.addMember(member1);
-            team1.addMember(member2);
-            em.persist(team1);
-
-            Team team2 = new Team();
-            team2.setName("MU");
-            team2.addMember(member3);
-            em.persist(team2);
-
+                idx = i / 3;
+                if (idx <= 2) {
+                    member.setTeam(team[idx]);
+                }
+                em.persist(member);
+            }
 
             em.flush(); //쿼리 DB에 전송
             em.clear(); //엔티티 영속성 해제
 
-            //엔티티 프로젝션 -> 프로젝션 되는 엔티티들 모두 영속성 컨텍스트에 저장된다.
-            TypedQuery<Member> member = em.createQuery("select m from Member m", Member.class);
-            List<Member> memberResultList = member.getResultList();
-            System.out.println("======action1======");
+            String query1 = "SELECT m FROM Member m LEFT OUTER JOIN m.team t";
+            List<Member> members = em.createQuery(query1, Member.class).getResultList();
 
-            for(Member m: memberResultList) {
-                //LAZY fetch
-                System.out.println(m.getUsername() +" " + m.getTeam().getName());
+            System.out.println("==========query1==========");
+            for (Member member : members) {
+                if (member.getTeam() != null) {
+                    System.out.printf("team: %s , name: %s\n", member.getTeam().getName(), member.getUsername());
+                } else {
+                    System.out.println("name: " + member.getUsername());
+                }
             }
-            System.out.println("======action1======");
+            System.out.println("==========query1==========");
 
-            //엔티티 프로젝션
-            TypedQuery<String> username = em.createQuery("select m.username from Member m", String.class);
-            List<String> usernameResultList = username.getResultList();
-            System.out.println("======action2======");
-            for(String n: usernameResultList) {
-                System.out.println("name is " + n);
+            System.out.println("==========query2==========");
+            String query2 = "SELECT t FROM Member m RIGHT OUTER JOIN m.team t";
+            TypedQuery<Team> teamTypedQuery = em.createQuery(query2, Team.class);
+            List<Team> teamTypedQueryResultList = teamTypedQuery.getResultList();
+            for (Team team1 : teamTypedQueryResultList) {
+                System.out.println("right outer join: " + team1.getName());
             }
-            System.out.println("======action2======");
+            System.out.println("==========query2==========");
 
-            //임베디드 타입 프로젝션
-            String myName = "rice";
-            TypedQuery<Address> address = em.createQuery("select m.address from Member m where m.username =: username ", Address.class).setParameter("username", myName);
-            Address addressSingleResult = address.getSingleResult();
-            System.out.println("======action3======");
-            System.out.println(addressSingleResult.getCity() + " " +addressSingleResult.getStreet() +" " + addressSingleResult.getZipcode());
-            System.out.println("======action3======");
-
-
-            // 멤버의 username과 age를 조회
-            TypedQuery<Object[]> query = em.createQuery(
-                    "SELECT m.username, m.age FROM Member m", Object[].class);
-            List<Object[]> resultList = query.getResultList();
-            // 결과 출력
-            System.out.println("======action4======");
-            if (!resultList.isEmpty()) {
-                Object[] result = resultList.get(0);
-                System.out.println("Username = " + result[0]);
-                System.out.println("Age = " + result[1]);
+            System.out.println("==========query3==========");
+            String query3 = "SELECT m FROM Member m, Team t WHERE m.team.id = t.id";
+            TypedQuery<Member> memberTypedQuery = em.createQuery(query3, Member.class);
+            List<Member> memberTypedQueryResultList = memberTypedQuery.getResultList();
+            for(Member member: memberTypedQueryResultList) {
+                System.out.println("세타 조인: " + member.getUsername());
             }
-            System.out.println("======action4======");
+            System.out.println("==========query3==========");
 
-
-            //스칼라 타입 프로젝션, new 명령어로 조회, 순서와 타입이 일치하는 생성자 필요, 단순값을 DTO로 바로 조회
-            String myTeam = "MU";
-            TypedQuery<MemberDTO> result = em.createQuery("select new MemberDTO(m.username, m.age) from Member m where m.team.name = :myTeam", MemberDTO.class)
-                    .setParameter("myTeam", myTeam);
-
-            // 결과 출력
-            MemberDTO memberDTO = result.getResultList().get(0);
-            System.out.println("======action5======");
-            System.out.println("MemberDTO = " + memberDTO.getUsername());
-            System.out.println("MemberDTO = " + memberDTO.getAge());
-            System.out.println("======action5======");
-
-
+            System.out.println("==========query4==========");
+            String query4 = "SELECT m,t FROM Member m JOIN m.team t on t.name = 'ars'";
+            TypedQuery<Object[]> leftjoin = em.createQuery(query4, Object[].class);
+            List<Object[]> leftjoinResultList = leftjoin.getResultList();
+            for (Object[] result : leftjoinResultList) {
+                Member member1 = (Member) result[0];
+                Team team1 = (Team) result[1];
+                System.out.println("Member: " + member1.getUsername() + ", Team: " + team1.getName());
+            }
+            System.out.println("==========query4==========");
 
             tx.commit();
 

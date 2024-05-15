@@ -10,21 +10,15 @@ public class Member {
     private String username;
     private int age;
 
-    @Embedded
-    private Address address; // 프로젝션 테스트 용으로 삽입함.
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
-    public Address getAddress() {
-        return address;
+    //연관관계 편의 메서드
+    public void addTeam(Team team) {
+        this.team = team;
+        team.getMembers().add(this);
     }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
     public Long getId() {
         return id;
     }
