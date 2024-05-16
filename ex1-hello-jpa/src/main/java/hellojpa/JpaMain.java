@@ -65,48 +65,12 @@ public class JpaMain {
             em.flush(); //쿼리 DB에 전송
             em.clear(); //엔티티 영속성 해제
 
-            String query1 = "SELECT m FROM Member m LEFT OUTER JOIN m.team t";
-            List<Member> members = em.createQuery(query1, Member.class).getResultList();
-
-            System.out.println("==========query1==========");
-            for (Member member : members) {
-                if (member.getTeam() != null) {
-                    System.out.printf("team: %s , name: %s\n", member.getTeam().getName(), member.getUsername());
-                } else {
-                    System.out.println("name: " + member.getUsername());
-                }
-            }
-            System.out.println("==========query1==========");
-
-            System.out.println("==========query2==========");
-            String query2 = "SELECT t FROM Member m RIGHT OUTER JOIN m.team t";
-            TypedQuery<Team> teamTypedQuery = em.createQuery(query2, Team.class);
-            List<Team> teamTypedQueryResultList = teamTypedQuery.getResultList();
-            for (Team team1 : teamTypedQueryResultList) {
-                System.out.println("right outer join: " + team1.getName());
-            }
-            System.out.println("==========query2==========");
-
-            System.out.println("==========query3==========");
-            String query3 = "SELECT m FROM Member m, Team t WHERE m.team.id = t.id";
-            TypedQuery<Member> memberTypedQuery = em.createQuery(query3, Member.class);
+            String query1 = "SELECT m from Member m WHERE m.age > (SELECT AVG(m2.age) FROM Member m2)";
+            TypedQuery<Member> memberTypedQuery = em.createQuery(query1, Member.class);
             List<Member> memberTypedQueryResultList = memberTypedQuery.getResultList();
             for(Member member: memberTypedQueryResultList) {
-                System.out.println("세타 조인: " + member.getUsername());
+                System.out.println("평균 보다 나이가 많은 사람들: "  + member.getUsername());
             }
-            System.out.println("==========query3==========");
-
-            System.out.println("==========query4==========");
-            String query4 = "SELECT m,t FROM Member m JOIN m.team t on t.name = 'ars'";
-            TypedQuery<Object[]> leftjoin = em.createQuery(query4, Object[].class);
-            List<Object[]> leftjoinResultList = leftjoin.getResultList();
-            for (Object[] result : leftjoinResultList) {
-                Member member1 = (Member) result[0];
-                Team team1 = (Team) result[1];
-                System.out.println("Member: " + member1.getUsername() + ", Team: " + team1.getName());
-            }
-            System.out.println("==========query4==========");
-
             tx.commit();
 
         } catch (Exception e) {
