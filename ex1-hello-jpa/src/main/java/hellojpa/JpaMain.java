@@ -21,6 +21,7 @@ import hellojpa.superMapping.Seller;
 import jakarta.persistence.*;
 import org.hibernate.Hibernate;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,38 +40,51 @@ public class JpaMain {
         tx.begin();
 
         try {
-            String[] players = {"rice", "saka", "raya", "doku", "ederson", "dias", "son", "romero", "porro", "lukaku", "virtz"};
-            String[] teams = {"ars", "mc", "tot", "liv", "mu"};
-            Team[] team = new Team[teams.length];
-            int idx = 0;
-
-            for (int i = 0; i < teams.length; i++) {
-                team[i] = new Team();
-                team[i].setName(teams[i]);
-                em.persist(team[i]);
+            // Team 생성
+            String[] teams = {"Arsenal", "Spurs", "Dortmund", "Bayern"};
+            for(int i = 0; i < teams.length; i++) {
+                Team t = new Team();
+                t.setName(teams[i]);
+                em.persist(t);
             }
 
-            for (int i = 0; i < players.length; i++) {
-                Member member = new Member();
-                member.setUsername(players[i]);
-                member.setAge(i);
-
-                idx = i / 3;
-                if (idx <= 2) {
-                    member.setTeam(team[idx]);
-                }
-                em.persist(member);
+            // Member 생성 - ARS
+            String[] ars = {"Henry", "Xhaka", "Trossard", "Cech", "Giroud"};
+            for (int i = 0; i < ars.length; i++) {
+                Member m = new Member();
+                m.setUsername(ars[i]);
+                m.setTeam(em.find(Team.class, 1));
+                em.persist(m);
             }
 
-            em.flush(); //쿼리 DB에 전송
-            em.clear(); //엔티티 영속성 해제
-
-            String query1 = "SELECT m from Member m WHERE m.age > (SELECT AVG(m2.age) FROM Member m2)";
-            TypedQuery<Member> memberTypedQuery = em.createQuery(query1, Member.class);
-            List<Member> memberTypedQueryResultList = memberTypedQuery.getResultList();
-            for(Member member: memberTypedQueryResultList) {
-                System.out.println("평균 보다 나이가 많은 사람들: "  + member.getUsername());
+            // Member 생성 - SPURS
+            String[] spurs = {"Son", "Kane", "Persic"};
+            for(int i = 0; i < spurs.length; i++) {
+                Member m = new Member();
+                m.setUsername(spurs[i]);
+                m.setTeam(em.find(Team.class, 2));
+                em.persist(m);
             }
+
+            // FA 선수들 - OUTER JOIN 용
+            String[] FaPlayer = {"Mbappe", "varane"};
+            for(int i = 0; i < FaPlayer.length; i++) {
+                Member m = new Member();
+                m.setUsername(FaPlayer[i]);
+                em.persist(m);
+            }
+
+            em.flush();
+            em.clear();
+
+            String query1 = "SELECT m.username FROM Member m";
+            TypedQuery<String> queryResult1 = em.createQuery(query1,String.class);
+            List<String> usernames = queryResult1.setFirstResult(1).setMaxResults(3).getResultList();
+
+            for (String username: usernames) {
+                System.out.println(username);
+            }
+
             tx.commit();
 
         } catch (Exception e) {
