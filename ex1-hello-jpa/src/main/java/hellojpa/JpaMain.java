@@ -94,7 +94,7 @@ public class JpaMain {
             for(Author a: authorList) {
                 System.out.println(a.getName());
                 //페치 조인은 객체 그래프를 SQL 한번에 조회하는 개념
-                //페치 조인을 사용했다면 저자와 책을 함께 조회해서 지연 로딩 발생 안함.
+                //페치 조인을 사용했다면 저자와 저자의 책 컬렉션을 함께 조회해서 지연 로딩 발생 안함.
                 //일반 조인 실행시 연관된 엔티티를 함께 조회하지 않음. 그래서 프록시 이므로 이때 지연 로딩함.
                 List<Book> tmp = a.getBooks();
 
@@ -102,6 +102,15 @@ public class JpaMain {
                     System.out.println(b.getTitle());
                 }
                 System.out.println("\n");
+            }
+
+            // JPQL에서 엔티티를 직접 사용하면 SQL에서 해당 엔티티의 기본키 값을 사용
+            // b.author.id = author.id 가 되는 느낌.
+            String testQuery = "SELECT b FROM Book b WHERE b.author = :author";
+            List<Book> bookList = em.createQuery(testQuery, Book.class).setParameter("author", author1).getResultList();
+
+            for(Book b: bookList) {
+                System.out.println(b.getAuthor().getName() +": " + b.getTitle());
             }
 
             tx.commit();
