@@ -2,7 +2,7 @@ package hellojpa.jpql;
 
 import jakarta.persistence.*;
 
-@Entity
+//@Entity
 public class Member {
     @Id
     @GeneratedValue

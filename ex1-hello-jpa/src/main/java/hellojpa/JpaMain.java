@@ -4,9 +4,10 @@ import hellojpa.cascadee.Attach;
 import hellojpa.cascadee.FileType;
 import hellojpa.cascadee.Post;
 import hellojpa.domain.Album;
-import hellojpa.domain.Book;
 import hellojpa.domain.Movie;
 import hellojpa.embeddedType.*;
+import hellojpa.fetchJoin.Author;
+import hellojpa.fetchJoin.Book;
 import hellojpa.jpql.Address;
 import hellojpa.jpql.Member;
 import hellojpa.jpql.MemberDTO;
@@ -41,76 +42,69 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Member member1 = new Member();
-            member1.setUsername("엔소 페르난데스  ");// TRIM 실습을 위해 공백을 남겨둠
-            member1.setAge(24);
-            em.persist(member1);
+            Author author1 = new Author();
+            author1.setName("샘");
 
-            Member member2 = new Member();
-            member2.setUsername("  페르난지뉴");
-            member2.setAge(39);
-            em.persist(member2);
+            Author author2 = new Author();
+            author2.setName("이사벨라");
 
-            Team team1 = new Team();
-            team1.setName("argentina");
-            em.persist(team1);
+            Author[] authors = {author1,author2};
 
-            Team team2 = new Team();
-            team2.setName("BRAZIL");
-            em.persist(team2);
+            for(Author a : authors) {
+                em.persist(a);
+            }
+
+            Book book1 = new Book();
+            book1.setTitle("잉글랜드 여행");
+
+            Book book2 = new Book();
+            book2.setTitle("웨일스 여행");
+
+            Book book3 = new Book();
+            book3.setTitle("브리즈번 여행");
+
+            Book book4 = new Book();
+            book4.setTitle("멜버른 여행");
+
+            Book book5 = new Book();
+            book5.setTitle("시드니 여행");
+
+            author1.addBook(book1);
+            author1.addBook(book2);
+
+            author2.addBook(book3);
+            author2.addBook(book4);
+            author2.addBook(book5);
+
+            Book[] books = {book1, book2, book3, book4, book5};
+
+
+            for(Book b: books) {
+                em.persist(b);
+            }
 
             em.flush();
             em.clear();
 
-            //CONCAT
-            String q1 = "SELECT CONCAT(m.username, ':', m.age) FROM Member m";
-            List<String> stringList = em.createQuery(q1, String.class).getResultList();
-            for(String s: stringList) {
-                System.out.println("s = " + s);
+            //fetchjoin을 쓰냐 안 쓰냐에 따라 쿼리문 나가느 게 달라짐.
+            String normalQuery = "SELECT a FROM Author a";
+            String fetchJoinQuery = "SELECT a FROM Author a JOIN FETCH a.books";
+            List<Author> authorList = em.createQuery(fetchJoinQuery, Author.class).getResultList();
+
+            for(Author a: authorList) {
+                System.out.println(a.getName());
+                //페치 조인은 객체 그래프를 SQL 한번에 조회하는 개념
+                //페치 조인을 사용했다면 저자와 책을 함께 조회해서 지연 로딩 발생 안함.
+                //일반 조인 실행시 연관된 엔티티를 함께 조회하지 않음. 그래서 프록시 이므로 이때 지연 로딩함.
+                List<Book> tmp = a.getBooks();
+
+                for(Book b: tmp){
+                    System.out.println(b.getTitle());
+                }
+                System.out.println("\n");
             }
 
-            //SUBSTR
-            String q2 = "SELECT SUBSTR(m.username, 1,3)FROM Member m";
-            List<String> stringList1 = em.createQuery(q2, String.class).getResultList();
-            for(String s: stringList1) {
-                System.out.println("s = " + s);
-            }
-
-            //TRIM
-            String q3 = "SELECT TRIM(m.username) FROM Member m";
-            List<String> stringList2 = em.createQuery(q3, String.class).getResultList();
-            for(String s: stringList2) {
-                System.out.println("s = " + s);
-            }
             tx.commit();
-
-            //UPPER,LOWER,LENGTH
-            String q4 = "SELECT UPPER(t.name) FROM Team t";
-            List<String> stringList3 = em.createQuery(q4, String.class).getResultList();
-            for(String s: stringList3) {
-                System.out.println("s = " + s);
-            }
-
-            String q5 = "SELECT LOWER(t.name) FROM Team t";
-            List<String> stringList4 = em.createQuery(q5, String.class).getResultList();
-            for(String s: stringList4) {
-                System.out.println("s = " + s);
-            }
-
-            String q6 = "SELECT LENGTH(t.name) FROM Team t";
-            List<Integer> stringList5 = em.createQuery(q6, Integer.class).getResultList();
-            for(Integer s: stringList5) {
-                System.out.println("s = " + s);
-            }
-
-            //LOCATE
-            String q7 = "SELECT LOCATE('페', TRIM(m.name)) FROM Member m";
-            List<Integer> stringList6 = em.createQuery(q7, Integer.class).getResultList();
-            for(Integer s: stringList6) {
-                System.out.println("s = " + s);
-            }
-
-          
         } catch (Exception e) {
             tx.rollback();
             e.printStackTrace(); // 예외 정보 출력 추가

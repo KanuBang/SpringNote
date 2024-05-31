@@ -2,7 +2,7 @@ package hellojpa.jpql;
 
 import jakarta.persistence.*;
 
-@Entity
+//@Entity
 @Table(name = "ORDERS")
 public class Order {
     @Id @GeneratedValue
