@@ -19,6 +19,7 @@ import hellojpa.practice.Student;
 import hellojpa.proxyAndRelationshipManage.Phone;
 import hellojpa.superMapping.Seller;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.hibernate.Hibernate;
 
 import java.lang.reflect.Type;
@@ -40,102 +41,76 @@ public class JpaMain {
         tx.begin();
 
         try {
-            // Team 생성
-            String[] teams = {"Arsenal", "Spurs", "Dortmund", "Bayern"};
-            for(int i = 0; i < teams.length; i++) {
-                Team t = new Team();
-                t.setName(teams[i]);
-                em.persist(t);
-            }
+            Member member1 = new Member();
+            member1.setUsername("엔소 페르난데스  ");// TRIM 실습을 위해 공백을 남겨둠
+            member1.setAge(24);
+            em.persist(member1);
 
-            // Member 생성 - ARS
-            String[] ars = {"Henry", "Cech", "Giroud", "Xhaka", "Trossard"};
-            for (int i = 0; i < ars.length; i++) {
-                Member m = new Member();
-                m.setUsername(ars[i]);
-                m.setTeam(em.find(Team.class, 1));
-                m.setAge(50 - i * 5);
-                em.persist(m);
-            }
+            Member member2 = new Member();
+            member2.setUsername("  페르난지뉴");
+            member2.setAge(39);
+            em.persist(member2);
 
-            // Member 생성 - SPURS
-            String[] spurs = {"Persic", "Son", "Kane"};
-            for(int i = 0; i < spurs.length; i++) {
-                Member m = new Member();
-                m.setUsername(spurs[i]);
-                m.setAge(35 - i * 3);
-                m.setTeam(em.find(Team.class, 2));
-                em.persist(m);
-            }
+            Team team1 = new Team();
+            team1.setName("argentina");
+            em.persist(team1);
 
-            // FA 선수들 - OUTER JOIN 용
-            String[] FaPlayer = {"Mbappe", "varane"};
-            for(int i = 0; i < FaPlayer.length; i++) {
-                Member m = new Member();
-                m.setUsername(FaPlayer[i]);
-                em.persist(m);
-            }
+            Team team2 = new Team();
+            team2.setName("BRAZIL");
+            em.persist(team2);
 
             em.flush();
             em.clear();
 
-            //inner join
-            String query1 = "SELECT m.username FROM Member m INNER JOIN m.team t";
-            TypedQuery<String> queryResult1 = em.createQuery(query1,String.class);
-            List<String> usernames = queryResult1.getResultList();
-
-            for (String username: usernames) {
-                System.out.println(username);
+            //CONCAT
+            String q1 = "SELECT CONCAT(m.username, ':', m.age) FROM Member m";
+            List<String> stringList = em.createQuery(q1, String.class).getResultList();
+            for(String s: stringList) {
+                System.out.println("s = " + s);
             }
 
-            //OUTER JOIN
-            String query2 = "SELECT m.username FROM Member m LEFT OUTER JOIN m.team t";
-            TypedQuery<String> queryResult2 = em.createQuery(query2, String.class);
-            List<String> queryResult2ResultList = queryResult2.getResultList();
-            for(String s : queryResult2ResultList) {
-                System.out.println(s);
+            //SUBSTR
+            String q2 = "SELECT SUBSTR(m.username, 1,3)FROM Member m";
+            List<String> stringList1 = em.createQuery(q2, String.class).getResultList();
+            for(String s: stringList1) {
+                System.out.println("s = " + s);
             }
 
-            //Theta Join
-            String query3 = "SELECT DISTINCT t.name FROM Member m, Team t WHERE m.team.id = t.id";
-            TypedQuery<String> queryResult3 = em.createQuery(query3, String.class);
-            List<String> queryResult3ResultList = queryResult3.getResultList();
-            for(String s: queryResult3ResultList) {
-                System.out.println(s);
-            }
-
-            //subquery1
-            String query4 = "SELECT m.username, m.age FROM Member m WHERE m.team.id = 1 AND m.age > (SELECT avg(m1.age) FROM Member m1 WHERE m1.team.id = 1)";
-            TypedQuery<Object[]> queryResult4 = em.createQuery(query4, Object[].class);
-            List<Object[]> queryResult4ResultList = queryResult4.getResultList();
-            for(Object[] o : queryResult4ResultList) {
-                System.out.printf("username: %s, age: %d\n", o[0], (int)o[1]);
-            }
-
-            //subquery2
-            String query5 = "SELECT m.username, m.team.name FROM Member m WHERE exists (SELECT t FROM m.team t WHERE t.id = 1L)";
-            TypedQuery<Object[]> queryResult5 = em.createQuery(query5, Object[].class);
-            List<Object[]> queryResult5ResultList = queryResult5.getResultList();
-            for (Object[] o : queryResult5ResultList){
-                System.out.printf("username: %s, team: %s\n", o[0], o[1]);
-            }
-            //subquery3
-            String query6 = "SELECT m.username, m.team.name FROM Member m WHERE m.team  = ANY (SELECT t FROM Team t)";
-            TypedQuery<Object[]> queryResult6 = em.createQuery(query6, Object[].class);
-            List<Object[]> queryResult6ResultList = queryResult6.getResultList();
-            for (Object[] o : queryResult6ResultList){
-                System.out.printf("username: %s, team: %s\n", o[0], o[1]);
-            }
-
-            //JPQL String type
-            String query7 = "SELECT m FROM Member m WHERE m.team.name = 'Arsenal' ";
-            TypedQuery<Object[]> queryResult7 = em.createQuery(query7, Object[].class);
-            List<Object[]> queryResult7ResultList = queryResult7.getResultList();
-            for(Object[] o : queryResult7ResultList) {
-                System.out.println(o);
+            //TRIM
+            String q3 = "SELECT TRIM(m.username) FROM Member m";
+            List<String> stringList2 = em.createQuery(q3, String.class).getResultList();
+            for(String s: stringList2) {
+                System.out.println("s = " + s);
             }
             tx.commit();
 
+            //UPPER,LOWER,LENGTH
+            String q4 = "SELECT UPPER(t.name) FROM Team t";
+            List<String> stringList3 = em.createQuery(q4, String.class).getResultList();
+            for(String s: stringList3) {
+                System.out.println("s = " + s);
+            }
+
+            String q5 = "SELECT LOWER(t.name) FROM Team t";
+            List<String> stringList4 = em.createQuery(q5, String.class).getResultList();
+            for(String s: stringList4) {
+                System.out.println("s = " + s);
+            }
+
+            String q6 = "SELECT LENGTH(t.name) FROM Team t";
+            List<Integer> stringList5 = em.createQuery(q6, Integer.class).getResultList();
+            for(Integer s: stringList5) {
+                System.out.println("s = " + s);
+            }
+
+            //LOCATE
+            String q7 = "SELECT LOCATE('페', TRIM(m.name)) FROM Member m";
+            List<Integer> stringList6 = em.createQuery(q7, Integer.class).getResultList();
+            for(Integer s: stringList6) {
+                System.out.println("s = " + s);
+            }
+
+          
         } catch (Exception e) {
             tx.rollback();
             e.printStackTrace(); // 예외 정보 출력 추가
