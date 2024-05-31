@@ -19,6 +19,7 @@ import hellojpa.practice.Student;
 import hellojpa.proxyAndRelationshipManage.Phone;
 import hellojpa.superMapping.Seller;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.hibernate.Hibernate;
 
 import java.lang.reflect.Type;
@@ -41,80 +42,75 @@ public class JpaMain {
 
         try {
             Member member1 = new Member();
-            member1.setUsername("짱구");
-            member1.setAge(5);
+            member1.setUsername("엔소 페르난데스  ");// TRIM 실습을 위해 공백을 남겨둠
+            member1.setAge(24);
+            em.persist(member1);
 
             Member member2 = new Member();
-            member2.setUsername("아따맘마");
-            member2.setAge(40);
+            member2.setUsername("  페르난지뉴");
+            member2.setAge(39);
+            em.persist(member2);
 
-            Member member3 = new Member();
-            member3.setUsername("루피");
-            member3.setAge(23);
-
-            Member member4 = new Member();
             Team team1 = new Team();
-            team1.setName("japan");
-            team1.addMember(member2);
-            team1.addMember(member3);
+            team1.setName("argentina");
+            em.persist(team1);
 
             Team team2 = new Team();
-            team2.setName("korea");
-            team2.addMember(member1);
-
-            Member[] members = {member1, member2, member3, member4};
-            Team[] teams = {team1, team2};
-
-            for(Member member : members) {
-                em.persist(member);
-            }
-
-            for(Team team: teams) {
-                em.persist(team);
-            }
+            team2.setName("BRAZIL");
+            em.persist(team2);
 
             em.flush();
             em.clear();
 
-            String caseExpr1 =
-                                "select " +
-                                    "case when  10 <= m.age AND m.age <= 30 then '학생요금'" +
-                                          "when m.age >= 31 then '성인요금'"  +
-                                          "else '유아요금'" +
-                                    "end from Member m";
-
-            List<String> result = em.createQuery(caseExpr1, String.class).getResultList();
-            for(String s: result) {
+            //CONCAT
+            String q1 = "SELECT CONCAT(m.username, ':', m.age) FROM Member m";
+            List<String> stringList = em.createQuery(q1, String.class).getResultList();
+            for(String s: stringList) {
                 System.out.println("s = " + s);
             }
 
-            String caseExpr2 = "select " +
-                                    "case t.name " +
-                                    "when 'japan' then '일본만화' " +
-                                    "when 'korea' then '한국만화' " +
-                                    "else '출저불분명'" +
-                                    "end from Team t";
-
-            List<String> stringList = em.createQuery(caseExpr2, String.class).getResultList();
-            for (String s: stringList) {
-                System.out.println("s = " + s);
-            }
-
-            String caseExpr3 = "select coalesce(m.username, '이름이 없는 캐릭터') from Member m";
-            List<String> stringList1 = em.createQuery(caseExpr3, String.class).getResultList();
+            //SUBSTR
+            String q2 = "SELECT SUBSTR(m.username, 1,3)FROM Member m";
+            List<String> stringList1 = em.createQuery(q2, String.class).getResultList();
             for(String s: stringList1) {
                 System.out.println("s = " + s);
             }
 
-            String caseExpr4 = "select NULLIF(m.username, '아따맘마') from Member m";
-            List<String> stringList2 = em.createQuery(caseExpr4, String.class).getResultList();
-            for(String s : stringList2) {
+            //TRIM
+            String q3 = "SELECT TRIM(m.username) FROM Member m";
+            List<String> stringList2 = em.createQuery(q3, String.class).getResultList();
+            for(String s: stringList2) {
+                System.out.println("s = " + s);
+            }
+            tx.commit();
+
+            //UPPER,LOWER,LENGTH
+            String q4 = "SELECT UPPER(t.name) FROM Team t";
+            List<String> stringList3 = em.createQuery(q4, String.class).getResultList();
+            for(String s: stringList3) {
                 System.out.println("s = " + s);
             }
 
+            String q5 = "SELECT LOWER(t.name) FROM Team t";
+            List<String> stringList4 = em.createQuery(q5, String.class).getResultList();
+            for(String s: stringList4) {
+                System.out.println("s = " + s);
+            }
 
-            tx.commit();
+            String q6 = "SELECT LENGTH(t.name) FROM Team t";
+            List<Integer> stringList5 = em.createQuery(q6, Integer.class).getResultList();
+            for(Integer s: stringList5) {
+                System.out.println("s = " + s);
+            }
 
+            //LOCATE
+            String q7 = "SELECT LOCATE('페', TRIM(m.name)) FROM Member m";
+            List<Integer> stringList6 = em.createQuery(q7, Integer.class).getResultList();
+            for(Integer s: stringList6) {
+                System.out.println("s = " + s);
+            }
+
+          
         } catch (Exception e) {
             tx.rollback();
             e.printStackTrace(); // 예외 정보 출력 추가
