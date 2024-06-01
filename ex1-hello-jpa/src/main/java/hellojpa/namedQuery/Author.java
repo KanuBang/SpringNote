@@ -1,11 +1,11 @@
-package hellojpa.fetchJoin;
+package hellojpa.namedQuery;
 
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//@Entity
+@Entity
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

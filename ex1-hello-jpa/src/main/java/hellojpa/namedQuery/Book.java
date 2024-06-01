@@ -1,8 +1,13 @@
-package hellojpa.fetchJoin;
+package hellojpa.namedQuery;
+
 
 import jakarta.persistence.*;
 
-//@Entity
+@Entity
+@NamedQuery(
+        name = "Book.findByAuthorId",
+        query = "SELECT b FROM Book b WHERE b.author = :author"
+)
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

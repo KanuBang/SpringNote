@@ -1,32 +1,9 @@
 package hellojpa;
 
-import hellojpa.cascadee.Attach;
-import hellojpa.cascadee.FileType;
-import hellojpa.cascadee.Post;
-import hellojpa.domain.Album;
-import hellojpa.domain.Movie;
-import hellojpa.embeddedType.*;
-import hellojpa.fetchJoin.Author;
-import hellojpa.fetchJoin.Book;
-import hellojpa.jpql.Address;
-import hellojpa.jpql.Member;
-import hellojpa.jpql.MemberDTO;
-import hellojpa.jpql.Team;
-import hellojpa.loading.Club;
-import hellojpa.loading.Player;
-import hellojpa.practice.Locker;
-import hellojpa.practice.Mate;
-import hellojpa.practice.Student;
-import hellojpa.proxyAndRelationshipManage.Phone;
-import hellojpa.superMapping.Seller;
+import hellojpa.namedQuery.Author;
+import hellojpa.namedQuery.Book;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import org.hibernate.Hibernate;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 
@@ -104,10 +81,8 @@ public class JpaMain {
                 System.out.println("\n");
             }
 
-            // JPQL에서 엔티티를 직접 사용하면 SQL에서 해당 엔티티의 기본키 값을 사용
-            // b.author.id = author.id 가 되는 느낌.
-            String testQuery = "SELECT b FROM Book b WHERE b.author = :author";
-            List<Book> bookList = em.createQuery(testQuery, Book.class).setParameter("author", author1).getResultList();
+            //NamedQuery를 사용할 때는 createQuery가 아닌 createNamedQuery를 사용해야 한다.
+            List<Book> bookList = em.createNamedQuery("Book.findByAuthorId", Book.class).setParameter("author", author1).getResultList();
 
             for(Book b: bookList) {
                 System.out.println(b.getAuthor().getName() +": " + b.getTitle());

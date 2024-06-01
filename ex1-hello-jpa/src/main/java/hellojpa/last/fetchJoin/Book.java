@@ -1,4 +1,4 @@
-package hellojpa.fetchJoin;
+package hellojpa.last.fetchJoin;
 
 import jakarta.persistence.*;
 
