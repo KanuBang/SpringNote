@@ -1,9 +1,9 @@
-package hellojpa.namedQuery;
+package hellojpa.bulkOperation;
 
 
 import jakarta.persistence.*;
 
-//@Entity
+@Entity
 @NamedQuery(
         name = "Book.findByAuthorId",
         query = "SELECT b FROM Book b WHERE b.author = :author"
@@ -13,6 +13,8 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
+    private Long follwer;
+
 
     @ManyToOne
     @JoinColumn(name = "author_id")
@@ -41,5 +43,11 @@ public class Book {
     public void setAuthor(Author author) {
         this.author = author;
     }
+    public Long getFollwer() {
+        return follwer;
+    }
 
+    public void setFollwer(Long follwer) {
+        this.follwer = follwer;
+    }
 }

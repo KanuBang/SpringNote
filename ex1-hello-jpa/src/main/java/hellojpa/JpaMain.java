@@ -1,7 +1,7 @@
 package hellojpa;
 
-import hellojpa.namedQuery.Author;
-import hellojpa.namedQuery.Book;
+import hellojpa.bulkOperation.Author;
+import hellojpa.bulkOperation.Book;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -33,18 +33,23 @@ public class JpaMain {
 
             Book book1 = new Book();
             book1.setTitle("잉글랜드 여행");
+            book1.setFollwer(10L);
 
             Book book2 = new Book();
             book2.setTitle("웨일스 여행");
+            book2.setFollwer(20L);
 
             Book book3 = new Book();
             book3.setTitle("브리즈번 여행");
+            book3.setFollwer(5L);
 
             Book book4 = new Book();
             book4.setTitle("멜버른 여행");
+            book4.setFollwer(15L);
 
             Book book5 = new Book();
             book5.setTitle("시드니 여행");
+            book5.setFollwer(25L);
 
             author1.addBook(book1);
             author1.addBook(book2);
@@ -55,38 +60,33 @@ public class JpaMain {
 
             Book[] books = {book1, book2, book3, book4, book5};
 
-
             for(Book b: books) {
+
                 em.persist(b);
             }
 
             em.flush();
             em.clear();
 
-            //fetchjoin을 쓰냐 안 쓰냐에 따라 쿼리문 나가느 게 달라짐.
-            String normalQuery = "SELECT a FROM Author a";
-            String fetchJoinQuery = "SELECT a FROM Author a JOIN FETCH a.books";
-            List<Author> authorList = em.createQuery(fetchJoinQuery, Author.class).getResultList();
+            // bulk operation is used to delete or update rows
+            String bulkSql1 = "UPDATE Book b set b.follwer = b.follwer * 2 WHERE b.follwer >= 15";
 
-            for(Author a: authorList) {
-                System.out.println(a.getName());
-                //페치 조인은 객체 그래프를 SQL 한번에 조회하는 개념
-                //페치 조인을 사용했다면 저자와 저자의 책 컬렉션을 함께 조회해서 지연 로딩 발생 안함.
-                //일반 조인 실행시 연관된 엔티티를 함께 조회하지 않음. 그래서 프록시 이므로 이때 지연 로딩함.
-                List<Book> tmp = a.getBooks();
+            /*
+                When you call executeUpdate() for a JPQL or native SQL query,
+                a flush operation does occur automatically.
+             */
+            int count = em.createQuery(bulkSql1).executeUpdate(); // it will return the number of rows updated.
+            System.out.println("updated: " + count);
 
-                for(Book b: tmp){
-                    System.out.println(b.getTitle());
-                }
-                System.out.println("\n");
-            }
+            // after bulk operation was called, flush() occured.
+            // So, DB status will be different from Persistence Context
+            System.out.println("book5 follwer: " + book5.getFollwer());
 
-            //NamedQuery를 사용할 때는 createQuery가 아닌 createNamedQuery를 사용해야 한다.
-            List<Book> bookList = em.createNamedQuery("Book.findByAuthorId", Book.class).setParameter("author", author1).getResultList();
-
-            for(Book b: bookList) {
-                System.out.println(b.getAuthor().getName() +": " + b.getTitle());
-            }
+            // Therefore, we have to synchronize each status manually
+            // 벌크 연산 수행 후 영속성 컨텍스트 초기화
+            em.clear();
+            Book findBook = em.find(Book.class, book5.getId());
+            System.out.println("book5 follwer: " + findBook.getFollwer());
 
             tx.commit();
         } catch (Exception e) {
