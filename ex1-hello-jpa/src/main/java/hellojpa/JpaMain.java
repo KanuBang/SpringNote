@@ -1,31 +1,9 @@
 package hellojpa;
 
-import hellojpa.cascadee.Attach;
-import hellojpa.cascadee.FileType;
-import hellojpa.cascadee.Post;
-import hellojpa.domain.Album;
-import hellojpa.domain.Book;
-import hellojpa.domain.Movie;
-import hellojpa.embeddedType.*;
-import hellojpa.jpql.Address;
-import hellojpa.jpql.Member;
-import hellojpa.jpql.MemberDTO;
-import hellojpa.jpql.Team;
-import hellojpa.loading.Club;
-import hellojpa.loading.Player;
-import hellojpa.practice.Locker;
-import hellojpa.practice.Mate;
-import hellojpa.practice.Student;
-import hellojpa.proxyAndRelationshipManage.Phone;
-import hellojpa.superMapping.Seller;
+import hellojpa.bulkOperation.Author;
+import hellojpa.bulkOperation.Book;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import org.hibernate.Hibernate;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 
@@ -41,76 +19,76 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Member member1 = new Member();
-            member1.setUsername("엔소 페르난데스  ");// TRIM 실습을 위해 공백을 남겨둠
-            member1.setAge(24);
-            em.persist(member1);
+            Author author1 = new Author();
+            author1.setName("샘");
 
-            Member member2 = new Member();
-            member2.setUsername("  페르난지뉴");
-            member2.setAge(39);
-            em.persist(member2);
+            Author author2 = new Author();
+            author2.setName("이사벨라");
 
-            Team team1 = new Team();
-            team1.setName("argentina");
-            em.persist(team1);
+            Author[] authors = {author1,author2};
 
-            Team team2 = new Team();
-            team2.setName("BRAZIL");
-            em.persist(team2);
+            for(Author a : authors) {
+                em.persist(a);
+            }
+
+            Book book1 = new Book();
+            book1.setTitle("잉글랜드 여행");
+            book1.setFollwer(10L);
+
+            Book book2 = new Book();
+            book2.setTitle("웨일스 여행");
+            book2.setFollwer(20L);
+
+            Book book3 = new Book();
+            book3.setTitle("브리즈번 여행");
+            book3.setFollwer(5L);
+
+            Book book4 = new Book();
+            book4.setTitle("멜버른 여행");
+            book4.setFollwer(15L);
+
+            Book book5 = new Book();
+            book5.setTitle("시드니 여행");
+            book5.setFollwer(25L);
+
+            author1.addBook(book1);
+            author1.addBook(book2);
+
+            author2.addBook(book3);
+            author2.addBook(book4);
+            author2.addBook(book5);
+
+            Book[] books = {book1, book2, book3, book4, book5};
+
+            for(Book b: books) {
+
+                em.persist(b);
+            }
 
             em.flush();
             em.clear();
 
-            //CONCAT
-            String q1 = "SELECT CONCAT(m.username, ':', m.age) FROM Member m";
-            List<String> stringList = em.createQuery(q1, String.class).getResultList();
-            for(String s: stringList) {
-                System.out.println("s = " + s);
-            }
+            // bulk operation is used to delete or update rows
+            String bulkSql1 = "UPDATE Book b set b.follwer = b.follwer * 2 WHERE b.follwer >= 15";
 
-            //SUBSTR
-            String q2 = "SELECT SUBSTR(m.username, 1,3)FROM Member m";
-            List<String> stringList1 = em.createQuery(q2, String.class).getResultList();
-            for(String s: stringList1) {
-                System.out.println("s = " + s);
-            }
+            /*
+                When you call executeUpdate() for a JPQL or native SQL query,
+                a flush operation does occur automatically.
+             */
+            int count = em.createQuery(bulkSql1).executeUpdate(); // it will return the number of rows updated.
+            System.out.println("updated: " + count);
 
-            //TRIM
-            String q3 = "SELECT TRIM(m.username) FROM Member m";
-            List<String> stringList2 = em.createQuery(q3, String.class).getResultList();
-            for(String s: stringList2) {
-                System.out.println("s = " + s);
-            }
+            // after bulk operation was called, flush() occured.
+            // So, DB status will be different from Persistence Context
+            System.out.println("book5 follwer: " + book5.getFollwer());
+
+            // Therefore, we have to synchronize each status manually
+            // 벌크 연산 수행 후 영속성 컨텍스트 초기화
+            em.clear();
+            Book findBook = em.find(Book.class, book5.getId());
+            System.out.println("book5 follwer: " + findBook.getFollwer());
+
             tx.commit();
-
-            //UPPER,LOWER,LENGTH
-            String q4 = "SELECT UPPER(t.name) FROM Team t";
-            List<String> stringList3 = em.createQuery(q4, String.class).getResultList();
-            for(String s: stringList3) {
-                System.out.println("s = " + s);
-            }
-
-            String q5 = "SELECT LOWER(t.name) FROM Team t";
-            List<String> stringList4 = em.createQuery(q5, String.class).getResultList();
-            for(String s: stringList4) {
-                System.out.println("s = " + s);
-            }
-
-            String q6 = "SELECT LENGTH(t.name) FROM Team t";
-            List<Integer> stringList5 = em.createQuery(q6, Integer.class).getResultList();
-            for(Integer s: stringList5) {
-                System.out.println("s = " + s);
-            }
-
-            //LOCATE
-            String q7 = "SELECT LOCATE('페', TRIM(m.name)) FROM Member m";
-            List<Integer> stringList6 = em.createQuery(q7, Integer.class).getResultList();
-            for(Integer s: stringList6) {
-                System.out.println("s = " + s);
-            }
-
-          
         } catch (Exception e) {
             tx.rollback();
             e.printStackTrace(); // 예외 정보 출력 추가
