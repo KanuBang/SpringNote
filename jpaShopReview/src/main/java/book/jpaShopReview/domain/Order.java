@@ -18,13 +18,24 @@ public class Order {
     @Column(name = "ORDER_ID")
     private Long id;
 
+    // 1:N 관계 (Member:Orders)
+    // 지연 로딩 Order을 로딩할 때 연관관계에 있는 Member도 한 거번에 로딩하는 것이 아니라
+    // Order에서 Member에 접근할 때 실제 DB에 접근하여 로딩
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEMBER_ID")
+    @JoinColumn(name = "MEMBER_ID") // 1:N의 N 쪽에 외래키 컬럼을 명시적으로 지정
     private Member member;
 
+
+    // 1:N 관계 (Orders: Order_Item)
+    // 양방향 참조를 위한 속성이다.
+    // mappedBy를 통해 연관관계의 주인을 알리고,주인이 어떤 필드로 자신을 참조하는 지 알린다.
+    // Order 엔티티의 orderItems 필드는 OrderItem 엔티티의 order 필드를 통해 참조됩니다.
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
+    // 1:1 관계 (Orders:Delivery)
+    // 개발자 관점에서 주 테이블을 연관관계 주인으로 설
+    // CascadeType.ALL 부모테이블에 대한 작업이 자식테이블에 그대로 동기화됨.
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "DELIVERY_ID")
     private Delivery delivery;
@@ -35,6 +46,7 @@ public class Order {
     private OrderStatus status;
 
     //==연관관계 메서드==//
+    //1:N 관계에서는 일반적으로 N쪽에 작성한다.
     public void setMember(Member member) {
         this.member = member;
         member.getOrders().add(this);
