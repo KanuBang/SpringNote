@@ -11,9 +11,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@Transactional
+@RunWith(SpringRunner.class) // 스프링과 테스트 통합
+@SpringBootTest // 스프링 부트를 띄우고 테스트를 한다. 이게 없으면 @Autowired 미작동
+@Transactional // 반복 가능한 테스트 지원, 트랜잭션 지원, 테스트가 끝나면 강제로 롤백
 public class MemberServiceTest {
     @Autowired MemberService memberService;
     @Autowired MemberRepository memberRepository;
