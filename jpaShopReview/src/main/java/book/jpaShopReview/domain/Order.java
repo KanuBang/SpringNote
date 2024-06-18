@@ -78,7 +78,7 @@ public class Order {
         return order;
     }
 
-    // 비즈니스 로직
+    // 비즈니스 로직 - 데이터 관련 작업은 데이터를 가지고 있는 쪽에 메서드를 넣어야 응집성이 좋다.
     // 주문 취소
     public void cancle() {
 
