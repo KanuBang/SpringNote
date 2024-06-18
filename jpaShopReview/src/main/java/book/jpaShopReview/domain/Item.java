@@ -20,20 +20,25 @@ public abstract class Item {
 
     private String name;
     private int price;
-    private int stackQuantity;
+    private int stockQuantity;
 
     @ManyToMany(mappedBy = "items")
-    private List<Category> categories = new ArrayList<Category>();
+    private List<Category> categories = new ArrayList <Category>();
 
+    //비즈니스 로직 - 데이터 관련 작업은 데이터를 가지고 있는 쪽에 메서드를 넣어야 응집성이 좋다.
+
+    //재고 추가
     public void addStock(int quantity) {
-        this.stackQuantity += quantity;
+        this.stockQuantity += quantity;
     }
 
+    //재고 삭제
     public void removeStock(int quantity) {
-        int restStock = this.stackQuantity - quantity;
+        int restStock = this.stockQuantity - quantity;
         if (restStock < 0) {
             throw new NotEnoughStockException("need more stock");
         }
-        this.stackQuantity = restStock;
+        this.stockQuantity = restStock;
     }
 }
+
