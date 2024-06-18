@@ -16,7 +16,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderRepository {
 
-    @PersistenceContext
     private final EntityManager em; //엔티티 매니저
 
     // 영속성 컨텍스트 저장

@@ -28,21 +28,21 @@ public class OrderServiceTest {
     @Test
     public void 상품주문() throws Exception {
 
-        //Given
+        //Given - 이런 데이터가 주어지고
         Member member = createMember();
         Item item = createBook("시골 JPA", 10000, 10);
         int orderCount = 2;
 
-        //When
+        //When - 이런 비즈니스 로직을 실행시켰을 때
         Long orderId = orderService.order(member.getId(), item.getId(), orderCount);
 
-        //Then
+        //Then - 결과를 이렇게 확인
         Order getOrder = orderRepository.findOne(orderId);
 
         assertEquals(OrderStatus.ORDER, getOrder.getStatus());
         assertEquals(1, getOrder.getOrderItems().size());
         assertEquals(10000*2,getOrder.getTotalPrice());
-        assertEquals(8, item.getStackQuantity());
+        assertEquals(8, item.getStockQuantity());
     }
 
     @Test(expected = NotEnoughStockException.class)
@@ -76,7 +76,7 @@ public class OrderServiceTest {
         Order getOrder = orderRepository.findOne(orderId);
 
         assertEquals(OrderStatus.CANCLE, getOrder.getStatus());
-        assertEquals(10, item.getStackQuantity());
+        assertEquals(10, item.getStockQuantity());
     }
 
     private Member createMember() {
@@ -90,7 +90,7 @@ public class OrderServiceTest {
     private Book createBook(String name, int price, int stackQuantity) {
         Book book = new Book();
         book.setName(name);
-        book.setStackQuantity(stackQuantity);
+        book.setStockQuantity(stackQuantity);
         book.setPrice(price);
         em.persist(book);
         return book;
