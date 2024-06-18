@@ -55,9 +55,12 @@ public class MemberController {
         return "redirect:/";
     }
 
+    // 회원 목록 컨트롤러
     @GetMapping(value = "/members")
     public String list(Model model){
+        // Model 객체는 뷰와 컨트롤러 사이의 데이터 전달에 쓰인다.
         List<Member> members = memberService.findMembers();
+        // Model에 members라는 이름으로 members 객체를 추가한다.
         model.addAttribute("members",members);
         return "members/memberList";
     }
