@@ -15,7 +15,9 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
 
+    @Transactional
     public void saveItem(Item item) {
+        System.out.println("repository2222");
         itemRepository.save(item);
     }
 
