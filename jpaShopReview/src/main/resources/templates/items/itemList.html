@@ -17,6 +17,10 @@
                 <td th:text="${item.price}"></td>
                 <td th:text="${item.stockQuantity}"></td>
                 <td>
+                    <!--a 태그는 하이퍼링크를 생성합니다. 기본적으로 href="#"는 아무 동작도 하지 않지만, 여기서는 Thymeleaf를 사용하여 동적으로 URL을 생성한다.-->
+                    <!-- th:href는 동적으로 링크의 href 속성을 설정합니다. -->
+                    <!-- @{/items/{id}/edit (id=${item.id})} 구문은 Thymeleaf의 URL 표현식입니다.-->
+                    <!-- {id} 부분은 변수 플레이스홀더로 사용되고, (id=${item.id})는 item.id 값을 해당 플레이스홀더에 대입합니다.-->
                     <a href="#" th:href="@{/items/{id}/edit (id=${item.id})}" class="btn btn-primary" role="button">수정</a>
                 </td>
             </tr>

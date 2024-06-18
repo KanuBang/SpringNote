@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
@@ -18,12 +20,14 @@ public class ItemController {
 
     private final ItemService itemService;
 
+    // 상품 등록 GET
     @GetMapping(value = "/items/new")
     public String createForm(Model model) {
         model.addAttribute("form", new BookForm());
         return "items/createItemForm";
     }
 
+    // 상품 등록 POST
     @PostMapping(value = "/items/new")
     public String create(BookForm form) {
 
@@ -38,12 +42,47 @@ public class ItemController {
         return "redirect:/items";
     }
 
+    // 상품 목록 조회
     @GetMapping(value = "/items")
     public String list(Model model) {
         List<Item> items = itemService.findItems();
         model.addAttribute("items", items);
         return "items/itemList";
     }
+
+    // 상품 수정 GET
+    // @PathVariable: URL 경로에 포함된 변수를 메서드 파라미터로 바인딩하여 동적인 요청 처리를 가능하게 합니다.
+    @GetMapping(value = "/items/{itemId}/edit")
+    public String updateItemForm(@PathVariable("itemId") Long itemId, Model model) {
+        Book item = (Book)itemService.findOne(itemId);
+        BookForm form = new BookForm();
+
+        form.setId(item.getId());
+        form.setName(item.getName());
+        form.setPrice(item.getPrice());
+        form.setStockQuantity(item.getStockQuantity());
+        form.setAuthor(item.getAuthor());
+        form.setIsbn(item.getIsbn());
+
+        model.addAttribute("form", form);
+        return "items/updateItemForm";
+    }
+
+    // 상품 수정 POST
+    @PostMapping(value = "/items/{itemId}/edit")
+    public String updateItem(@ModelAttribute("form") BookForm form) {
+        Book book = new Book();
+        book.setId(form.getId());
+        book.setName(form.getName());
+        book.setPrice(form.getPrice());
+        book.setStockQuantity(form.getStockQuantity());
+        book.setAuthor(form.getAuthor());
+        book.setIsbn(form.getIsbn());
+
+        itemService.saveItem(book);
+        return "redirect:/items";
+    }
+
 
     
 }
