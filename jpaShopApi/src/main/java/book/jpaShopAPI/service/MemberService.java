@@ -16,6 +16,12 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
+    //영속 상태, 변경 감지 후 update
+    @Transactional
+    public void update(Long id, String name) {
+        Member member = memberRepository.findOne(id);
+        member.setName(name);
+    }
     @Transactional // 메서드 단위로 @Transactional 이용 가능, 읽기 / 쓰기 모두 가능
     public Long join(Member member) {
         this.validateDuplicateMember(member);
