@@ -36,11 +36,25 @@ public class OrderSimpleApiController {
         return all;
     }
 
+
     @GetMapping("/api/v2/simple-orders")
     public List<SimpleOrderDto> orderV2() {
 
         //order 조회 1번
         List<Order> orders = orderRepository.findAllByString(new OrderSearch());
+
+        List<SimpleOrderDto> result = orders.stream()
+                .map(o -> new SimpleOrderDto(o))
+                .collect(Collectors.toList());
+
+        return result;
+    }
+
+    // 엔티티를 fetch join을 사용해서 쿼리 1번에 조회
+    @GetMapping("/api/v3/simple-orders")
+    public List<SimpleOrderDto> ordersV3() {
+
+        List<Order> orders = orderRepository.findAllWithMemberDelivery();
 
         List<SimpleOrderDto> result = orders.stream()
                 .map(o -> new SimpleOrderDto(o))
