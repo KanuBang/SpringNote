@@ -39,6 +39,12 @@ dependencies {
 	testImplementation("org.junit.vintage:junit-vintage-engine") {
 		exclude group: "org.hamcrest", module: "hamcrest-core"
 	}
+
+	// 하이버네이트 모듈 등록 (3.0미만)
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
+
+	// 하이버네이트 모듈 등록 (3.0이상)
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5-jakarta'
 }
 
 
