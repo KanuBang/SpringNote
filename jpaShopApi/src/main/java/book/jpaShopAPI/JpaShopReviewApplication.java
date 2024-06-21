@@ -17,4 +17,5 @@ public class JpaShopReviewApplication {
 	Hibernate5JakartaModule hibernate5Module() {
 		return new Hibernate5JakartaModule();
 	}
+
 }
