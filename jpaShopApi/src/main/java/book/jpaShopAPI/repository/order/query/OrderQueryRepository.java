@@ -91,4 +91,14 @@ public class OrderQueryRepository {
         // 이 맵은 주문 ID를 키로 하고, 해당 주문 ID에 속하는 OrderItemQueryDto 객체 리스트를 값으로 가집니다.
         return orderItems.stream().collect(Collectors.groupingBy(OrderItemQueryDto::getOrderId));
     }
+
+    public List<OrderFlatDto> findAllByDto_flat() {
+        return em.createQuery(
+                "select new book.jpaShopAPI.repository.order.query.OrderFlatDto(o.id, m.name, o.orderDate, o.status, d.address, i.name, oi.orderPrice, oi.count)" +
+                " from Order o" +
+                " join o.member m" +
+                " join o.delivery d" +
+                " join o.orderItems oi" +
+                " join oi.item i", OrderFlatDto.class).getResultList();
+    }
 }
