@@ -42,6 +42,15 @@ public class OrderRepository {
                 " join fetch o.delivery d", Order.class).getResultList();
     }
 
+    // ToOne 관계를 모두 페치조인한다. ToOne 관계는 row수를 급격히 증가시키지 않으므로 페이징 쿼리에 영향을 주지 않는다.
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery("select o from Order o" +
+                " join fetch o.member m" +
+                " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 
     public List<Order> findAllByString(OrderSearch orderSearch) {
 
