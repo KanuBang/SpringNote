@@ -36,6 +36,8 @@ public class OrderQueryRepository {
     // 1:N 관계(컬렉션)을 제외한 나머지를 한번에 조회
     public List<OrderQueryDto> findOrders() {
         // ToOne
+        // fetch 조인을 할 필요 없는 이유는 DTO로 조회하기 때문이다.
+        // 필요한 것만 조회하고 싶기 때문에 굳이 모든 것을 fetch로 끌어올 필요가 없다.
         return em.createQuery("select new book.jpaShopAPI.repository.order.query.OrderQueryDto(o.id, m.name, o.orderDate, o.status, d.address)" +
                 " from Order o" +
                 " join o.member m" +
