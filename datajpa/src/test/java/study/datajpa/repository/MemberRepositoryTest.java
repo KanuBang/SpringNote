@@ -1,10 +1,12 @@
 package study.datajpa.repository;
 
 import org.assertj.core.api.Assertions;
+import org.hibernate.NonUniqueResultException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
@@ -174,5 +176,20 @@ class MemberRepositoryTest {
         assertThat(byAge2).isEqualTo(null);
         assertThat(byAge3.isEmpty()).isEqualTo(true);
 
+    }
+
+    @Test
+    @DisplayName("단건 조회인데 결과가 2개 반환될 때 예외 발생")
+    public void queryTest8() {
+
+        Member member1 = new Member("jinsu", 30);
+        Member member2 = new Member("son", 30);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        assertThrows(IncorrectResultSizeDataAccessException.class, () -> {
+            memberRepository.findByAge2();
+        });
     }
 }
