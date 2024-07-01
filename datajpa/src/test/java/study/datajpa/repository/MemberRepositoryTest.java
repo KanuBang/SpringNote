@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatException;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -145,5 +146,33 @@ class MemberRepositoryTest {
 
         List<Member> names = memberRepository.findByNames(List.of("pogba", "iu", "tim"));
         assertThat(names.size()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("@Query 테스트 - 조회 결과가 없을 때")
+    public void queryTest7() {
+
+        Member member1 = new Member("yamal", 17);
+        Member member2 = new Member("jinsu", 32);
+        Member member3 = new Member("son", 32);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+
+        // 조회 결과에 해당 하는 것이 없이 빈 리스트를 반환해야만 한다.
+        List<Member> result1 = memberRepository.findByAge1();
+
+        // 단건 조회 결과에 해당 하는 것이 없기에 null을 반환해야 한다.
+        // 내부적으로는 예외가 발생하지만 data jpa가 null을 반환한다.
+        Member byAge2 = memberRepository.findByAge2();
+
+        // Optional은 조회 결과가 없을 때 null이다.
+        Optional<Member> byAge3 = memberRepository.findByAge3();
+
+        assertThat(result1.size()).isEqualTo(0);
+        assertThat(byAge2).isEqualTo(null);
+        assertThat(byAge3.isEmpty()).isEqualTo(true);
+
     }
 }

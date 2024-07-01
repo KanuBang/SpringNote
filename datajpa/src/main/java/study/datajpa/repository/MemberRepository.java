@@ -6,11 +6,11 @@ import org.springframework.data.repository.query.Param;
 import study.datajpa.entity.Member;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByUsernameAndAgeGreaterThan(String username, int age);
-    List<Member> findByUsername(@Param("username") String username);
-
+    List<Member> findByUsername(@Param("username") String username); // 컬렉션 타입 반환
 
     // @Query
     @Query("select m from Member m where m.username= :username and m.age = :age")
@@ -33,5 +33,14 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     // 컬렉션 파라미터 바인딩
     @Query("select m from Member m where m.username in :names")
     List<Member> findByNames(@Param("names") List<String> names);
+
+
+    // 반환 타입 -> 굉장히 다양해서 문서를 참고해야.
+    @Query("select m from Member m where m.age between 20 and 30")
+    List<Member> findByAge1();
+    @Query("select m from Member m where m.age = 30")
+    Member findByAge2();
+    @Query("select m from Member m where m.age = 30")
+    Optional<Member> findByAge3();
 
 }
