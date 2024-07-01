@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import java.security.PublicKey;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,4 +115,35 @@ class MemberRepositoryTest {
         assertThat(result.get(0).getUsername()).isEqualTo(member1.getUsername());
     }
 
+    @Test
+    @DisplayName("@Query 테스트 - 파라미터 바인딩 - 동갑 찾기")
+    public void queryTest5() {
+
+        int age = 32;
+        Member member1 = new Member("pogba", age);
+        Member member2 = new Member("iu", age);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> sameAge = memberRepository.findSameAge(age);
+
+        assertThat(sameAge.size()).isEqualTo(2);
+
+    }
+
+    @Test
+    @DisplayName("@Query 테스트 - 컬렉션 파라미터 바인딩")
+    public void queryTest6() {
+        Member member1 = new Member("pogba");
+        Member member2 = new Member("iu");
+        Member member3 = new Member("tim");
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+
+        List<Member> names = memberRepository.findByNames(List.of("pogba", "iu", "tim"));
+        assertThat(names.size()).isEqualTo(3);
+    }
 }
