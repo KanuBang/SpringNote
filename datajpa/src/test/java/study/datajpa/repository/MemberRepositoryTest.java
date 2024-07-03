@@ -1,5 +1,6 @@
 package study.datajpa.repository;
 
+import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.hibernate.NonUniqueResultException;
 import org.junit.jupiter.api.DisplayName;
@@ -31,6 +32,9 @@ class MemberRepositoryTest {
 
     @Autowired
     TeamRepository teamRepository;
+
+    @Autowired
+    EntityManager em;
 
     @Test
     public void testMember() {
@@ -254,7 +258,97 @@ class MemberRepositoryTest {
         // 쿼리 차이점 확인 목적
         memberRepository.findByAge(10, pageRequest);
         memberRepository.findMemberAllCountBy(pageRequest);
+    }
 
+    @Test
+    @DisplayName("top query test")
+    public void topQuery() throws Exception {
+
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+        //when
+        List<Member> result = memberRepository.findTop3By();
+
+        //then
+        assertThat(result.size()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("page를 유지하면서 엔티티를 DTO로 변환하기")
+    public void dtoTransfer() {
+
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+        //when
+        PageRequest request = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+
+        // 페이지를 유지하면서 엔티티를 DTO로 변환하기
+        Page<Member> result = memberRepository.findByAge(10, request);
+        Page<MemberDto> dtoResult = result.map(m -> new MemberDto(m.getId(), m.getUsername()));
+
+        List<MemberDto> content = dtoResult.getContent();
+        assertThat(content.get(0)).isInstanceOf(MemberDto.class);
+    }
+
+    @Test
+    @DisplayName("bulk test")
+    public void bulkTest() {
+
+        // given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+
+        //when
+        int cnt = memberRepository.bulkAgePlus(20);
+
+        //then
+        assertThat(cnt).isEqualTo(3);
+    }
+
+
+    @Test
+    @DisplayName("쿼리보고 N+1 문제가 발생과 fetch join으로 해결한 것을 인지하자.")
+    public void findMemberLazy() throws Exception{
+
+        //given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+        memberRepository.save(new Member("member1",10,teamA));
+        memberRepository.save(new Member("member2",20,teamB));
+
+        //when
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> members = memberRepository.findAll();
+        
+        //then
+        for (Member member : members) {
+            member.getTeam().getName();
+        }
+
+        System.out.println("직접 @Query에 JPQL 작성하고 fetch join 사용");
+        memberRepository.findMemberFetchJoin();
+        System.out.println("스프링 데이터 JPA 오버라이딩 한 다음 EntityGraph를 이용하여 fetch join");
+        memberRepository.findAll();
+        System.out.println("@Query + @EntiryGraph fetch join");
+        memberRepository.findMemberEntityGraph();
 
     }
 }
