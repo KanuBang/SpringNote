@@ -1,6 +1,11 @@
 package study.datajpa.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.entity.Member;
@@ -35,12 +40,50 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByNames(@Param("names") List<String> names);
 
 
-    // 반환 타입 -> 굉장히 다양해서 문서를 참고해야.
+    //반환 타입 -> 굉장히 다양해서 문서를 참고해야.
     @Query("select m from Member m where m.age between 20 and 30")
     List<Member> findByAge1();
     @Query("select m from Member m where m.age = 30")
     Member findByAge2();
     @Query("select m from Member m where m.age = 30")
     Optional<Member> findByAge3();
+
+
+    //페이징
+
+    // Page
+    Page<Member> findByAge(int age, Pageable pageable);
+
+    // Slice
+    @Query("select m from Member m where m.age = :age")
+    Slice<Member> sliceFindByAge(@Param(("age")) int age, Pageable pageable);
+
+    // count 쿼리를 Page와 분리
+    @Query(value = "select m from Member m", countQuery = "select count(m.username) from Member m")
+    Page<Member> findMemberAllCountBy(Pageable pageable);
+
+
+    // Top
+    List<Member> findTop3By();
+
+    @Modifying(clearAutomatically = true)
+    @Query("update Member m set m.age = m.age + 1 where m.age >= :age")
+    int bulkAgePlus(@Param("age") int age);
+
+
+    // JPQL 페치 조인
+    @Query("select m from Member m left join fetch m.team")
+    List<Member> findMemberFetchJoin();
+
+    // 공통 메서드 오버라이드
+    @Override
+    @EntityGraph(attributePaths = {"team"})
+    List<Member> findAll();
+
+    // JPQL + 엔티티 그래프
+    @EntityGraph(attributePaths = {"team"})
+    @Query("select m from Member m")
+    List<Member> findMemberEntityGraph();
+
 
 }

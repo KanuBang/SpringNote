@@ -1,5 +1,6 @@
 package study.datajpa.repository;
 
+import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.hibernate.NonUniqueResultException;
 import org.junit.jupiter.api.DisplayName;
@@ -7,17 +8,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
-import java.security.PublicKey;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatException;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -29,6 +32,9 @@ class MemberRepositoryTest {
 
     @Autowired
     TeamRepository teamRepository;
+
+    @Autowired
+    EntityManager em;
 
     @Test
     public void testMember() {
@@ -191,5 +197,158 @@ class MemberRepositoryTest {
         assertThrows(IncorrectResultSizeDataAccessException.class, () -> {
             memberRepository.findByAge2();
         });
+    }
+
+    @Test
+    public void page() throws Exception {
+
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+        //when
+        PageRequest pageRequest = PageRequest.of(0,3, Sort.by(Sort.Direction.DESC, "username"));
+        Page<Member> page = memberRepository.findByAge(10, pageRequest);
+
+        //then
+        List<Member> content = page.getContent();// 조회된 데이터
+        assertThat(content.size()).isEqualTo(3); // 조호된 데이터 수
+        assertThat(page.getTotalElements()).isEqualTo(5); // 전체 데이터 수
+        assertThat(page.getNumber()).isEqualTo(0); // 페이지 번호
+        assertThat(page.getTotalPages()).isEqualTo(2); // 전체 페이지 번호
+        assertThat(page.isFirst()).isTrue(); // 첫번째 항목인가?
+        assertThat(page.hasNext()).isTrue(); // 다음 페이지가 있는가?
+
+    }
+
+    @Test
+    public void slicePage() throws Exception {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+
+        //when
+        PageRequest pageRequest = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "username"));
+        Slice<Member> page = memberRepository.sliceFindByAge(10, pageRequest);
+        List<Member> content = page.getContent();
+
+        //then
+        assertThat(content.size()).isEqualTo(2);
+        assertThat(page.getNumberOfElements()).isEqualTo(2);
+    }
+
+    @Test
+    public void separateCountQueryFromPage() throws Exception {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+        // 쿼리 차이점 확인 목적
+        memberRepository.findByAge(10, pageRequest);
+        memberRepository.findMemberAllCountBy(pageRequest);
+    }
+
+    @Test
+    @DisplayName("top query test")
+    public void topQuery() throws Exception {
+
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+        //when
+        List<Member> result = memberRepository.findTop3By();
+
+        //then
+        assertThat(result.size()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("page를 유지하면서 엔티티를 DTO로 변환하기")
+    public void dtoTransfer() {
+
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+        //when
+        PageRequest request = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+
+        // 페이지를 유지하면서 엔티티를 DTO로 변환하기
+        Page<Member> result = memberRepository.findByAge(10, request);
+        Page<MemberDto> dtoResult = result.map(m -> new MemberDto(m.getId(), m.getUsername()));
+
+        List<MemberDto> content = dtoResult.getContent();
+        assertThat(content.get(0)).isInstanceOf(MemberDto.class);
+    }
+
+    @Test
+    @DisplayName("bulk test")
+    public void bulkTest() {
+
+        // given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+
+        //when
+        int cnt = memberRepository.bulkAgePlus(20);
+
+        //then
+        assertThat(cnt).isEqualTo(3);
+    }
+
+
+    @Test
+    @DisplayName("쿼리보고 N+1 문제가 발생과 fetch join으로 해결한 것을 인지하자.")
+    public void findMemberLazy() throws Exception{
+
+        //given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+        memberRepository.save(new Member("member1",10,teamA));
+        memberRepository.save(new Member("member2",20,teamB));
+
+        //when
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> members = memberRepository.findAll();
+        
+        //then
+        for (Member member : members) {
+            member.getTeam().getName();
+        }
+
+        System.out.println("직접 @Query에 JPQL 작성하고 fetch join 사용");
+        memberRepository.findMemberFetchJoin();
+        System.out.println("스프링 데이터 JPA 오버라이딩 한 다음 EntityGraph를 이용하여 fetch join");
+        memberRepository.findAll();
+        System.out.println("@Query + @EntiryGraph fetch join");
+        memberRepository.findMemberEntityGraph();
+
     }
 }
