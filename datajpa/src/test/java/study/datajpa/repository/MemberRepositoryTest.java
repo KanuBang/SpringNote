@@ -351,4 +351,30 @@ class MemberRepositoryTest {
         memberRepository.findMemberEntityGraph();
 
     }
+
+    @Test
+    @DisplayName("읽어온 엔티티의 값을 변경하고 flush를 호출해도, 실제로는 데이터베이스에 변경 사항이 반영되지 않는다")
+    public void hint_test() throws Exception {
+
+        //given
+        memberRepository.save(new Member("member1", 10));
+        em.flush();
+        em.clear();
+
+        //then
+        Member member1 = memberRepository.findReadOnlyByUsername("member1");
+        member1.setUsername("chanwu");
+
+        //when
+        em.flush(); // update 쿼리 미발생
+    }
+
+    @Test
+    public void hint_test2() throws Exception {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+        //then, 카운트 쿼리 미발생 (forCount hint를 false로 지정했기 때문)
+        Page<Member> members = memberRepository.hintFindByUsername("member1", pageRequest);
+    }
 }
