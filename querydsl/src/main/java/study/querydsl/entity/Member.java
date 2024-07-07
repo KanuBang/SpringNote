@@ -1,22 +1,18 @@
-package study.datajpa.entity;
+package study.querydsl.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Entity
-@NamedQuery(
-        name ="Member.findByUsername",
-        query="select m from Member m where m.username = :username"
-)
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id", "username", "age"})
-public class Member extends BaseEntity{
+public class Member {
 
-    @Id @GeneratedValue
-    @Column(name = "member_id")
+    @Id
+    @GeneratedValue
     private Long id;
+
     private String username;
     private int age;
 
@@ -24,19 +20,12 @@ public class Member extends BaseEntity{
     @JoinColumn(name = "team_id")
     private Team team;
 
-    public void changeTeam(Team team) {
-        this.team = team;
-        team.getMembers().add(this);
-    }
-
     public Member(String username) {
         this(username, 0);
     }
-
-    public Member(String username, int age){
-        this(username,age,null);
+    public Member(String username, int age) {
+        this(username, age, null);
     }
-
     public Member(String username, int age, Team team) {
         this.username = username;
         this.age = age;
@@ -44,5 +33,8 @@ public class Member extends BaseEntity{
             changeTeam(team);
         }
     }
-
+    public void changeTeam(Team team) {
+        this.team = team;
+        team.getMembers().add(this);
+    }
 }

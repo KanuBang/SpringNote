@@ -1,12 +1,11 @@
 package study.datajpa.repository;
 
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.QueryHint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.entity.Member;
 
@@ -85,5 +84,18 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("select m from Member m")
     List<Member> findMemberEntityGraph();
 
+    // JPA HINT
+    @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
+    Member findReadOnlyByUsername(String username);
 
+
+    // JPA PAGE HINT
+    @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "false"), forCounting = false)
+    @Query("select m from Member m where username = :username")
+    Page<Member> hintFindByUsername(@Param("username") String username, Pageable pageable);
+
+    //Lock
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select m from Member m where username = :username")
+    List<Member> lockFindByUsername(@Param("username") String name);
 }
