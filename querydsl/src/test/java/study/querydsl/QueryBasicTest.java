@@ -1,5 +1,6 @@
 package study.querydsl;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -11,6 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
 import study.querydsl.entity.Team;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.*;
+import static study.querydsl.entity.QMember.member;
 
 @SpringBootTest
 @Transactional
@@ -41,7 +47,7 @@ public class QueryBasicTest {
     public void startJPQL() {
         String qlString = "select m from Member m " + "where m.username = :username";
         Member findMember = em.createQuery(qlString, Member.class).setParameter("username", "member1").getSingleResult();
-        Assertions.assertThat(findMember.getUsername()).isEqualTo("member1");
+        assertThat(findMember.getUsername()).isEqualTo("member1");
     }
 
     @Test
@@ -50,6 +56,46 @@ public class QueryBasicTest {
         QMember m = new QMember("m");
 
         Member findMember = queryFactory.select(m).from(m).where(m.username.eq("member1")).fetchOne();
-        Assertions.assertThat(findMember.getUsername()).isEqualTo("member1");
+        assertThat(findMember.getUsername()).isEqualTo("member1");
+    }
+
+    @Test
+    public void startQueryDsl3() {
+        Member findMember = queryFactory.select(member).from(member).where(member.username.eq("member1")).fetchOne();
+        assertThat(findMember.getUsername()).isEqualTo("member1");
+    }
+
+    @Test
+    public void search() {
+        Member findMember = queryFactory.selectFrom(member).where(member.username.eq("member1").and(member.age.eq(10))).fetchOne();
+        assertThat(findMember.getUsername()).isEqualTo("member1");
+    }
+
+    @Test
+    public void searchQueries() {
+        member.username.eq("member1");
+        member.username.ne("member1");
+        member.username.eq("member1").not();
+
+        member.username.isNotNull();
+        member.age.in(10,20); // age in (10, 20)
+        member.age.notIn(10, 20); // age not in (10,20)
+        member.age.between(10,30); // 10 <= age <= 20
+
+        member.age.goe(30); //greater or equal
+        member.age.gt(30); //greater than
+
+        member.age.loe(30); // less or equal
+        member.age.lt(30); // less than
+
+        member.username.like("member%"); // like 검색
+        member.username.contains("member"); //%member%
+        member.username.startsWith("member"); //member%
+    }
+
+    @Test
+    public void searchAndParam() {
+        List<Member> result1 = queryFactory.selectFrom(member).where(member.username.eq("member1"), member.age.eq(10)).fetch();
+        assertThat(result1.size()).isEqualTo(1);
     }
 }
