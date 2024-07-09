@@ -1,5 +1,6 @@
 package study.querydsl;
 
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -26,6 +27,7 @@ public class QueryBasicTest {
     EntityManager em;
 
     JPAQueryFactory queryFactory;
+
     @BeforeEach
     public void before() {
         queryFactory = new JPAQueryFactory(em);
@@ -34,7 +36,7 @@ public class QueryBasicTest {
         em.persist(teamA);
         em.persist(teamB);
 
-        for(int i = 1 ; i < 5; i++) {
+        for (int i = 1; i < 5; i++) {
             if (i <= 2) {
                 em.persist(new Member("member" + i, i * 10, teamA));
             } else {
@@ -78,9 +80,9 @@ public class QueryBasicTest {
         member.username.eq("member1").not();
 
         member.username.isNotNull();
-        member.age.in(10,20); // age in (10, 20)
+        member.age.in(10, 20); // age in (10, 20)
         member.age.notIn(10, 20); // age not in (10,20)
-        member.age.between(10,30); // 10 <= age <= 20
+        member.age.between(10, 30); // 10 <= age <= 20
 
         member.age.goe(30); //greater or equal
         member.age.gt(30); //greater than
@@ -97,5 +99,50 @@ public class QueryBasicTest {
     public void searchAndParam() {
         List<Member> result1 = queryFactory.selectFrom(member).where(member.username.eq("member1"), member.age.eq(10)).fetch();
         assertThat(result1.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void queryResult() {
+
+        //List
+        List<Member> result1 = queryFactory.selectFrom(member).fetch();
+        assertThat(result1.size()).isEqualTo(4);
+
+        //단건
+        Member member1 = queryFactory.selectFrom(member).where(member.username.eq("member1")).fetchOne();
+        assertThat(member1.getUsername()).isEqualTo("member1");
+
+
+        //처음 한 건 조회
+        Member member2 = queryFactory.selectFrom(member).fetchFirst();
+        assertThat(member2.getUsername()).isEqualTo("member1");
+
+        //페이징에서 사용
+        QueryResults<Member> memberQueryResults = queryFactory.selectFrom(member).fetchResults();
+
+
+        long cnt = queryFactory.selectFrom(member).fetchCount();
+        assertThat(cnt).isEqualTo(4);
+    }
+
+    @Test
+    public void sort() {
+        em.persist(new Member(null, 100));
+        em.persist(new Member("member5", 100));
+        em.persist(new Member("member6", 100));
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .where(member.age.eq(100)).orderBy(member.age.desc(), member.username.asc().nullsLast())
+                .fetch();
+
+        Member member5 = result.get(0);
+        Member member6 = result.get(1);
+        Member memberNull = result.get(2);
+
+        assertThat(member5.getUsername()).isEqualTo("member5");
+        assertThat(member6.getUsername()).isEqualTo("member6");
+        assertThat(memberNull.getUsername()).isNull();
+
     }
 }
