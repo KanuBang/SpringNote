@@ -374,7 +374,13 @@ public class QueryBasicTest {
                 .from(member)
                 .where(member.username.eq("member1"))
                 .fetchOne();
-
         System.out.println(result);
+    }
+    @Test
+    public void projectionTest() throws Exception {
+        List<Tuple> result = queryFactory.select(member.username, member.age).from(member).fetch();
+        for (Tuple tuple : result) {
+            System.out.println(tuple.get(member.username) + " " + tuple.get(member.age));
+        }
     }
 }
