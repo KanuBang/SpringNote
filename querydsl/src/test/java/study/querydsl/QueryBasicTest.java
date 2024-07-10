@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.dto.MemberDto;
+import study.querydsl.dto.QMemberDto;
 import study.querydsl.dto.UserDto;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
@@ -432,5 +433,29 @@ public class QueryBasicTest {
             System.out.println("name = " + userDto.getName());
             System.out.println("age = " + userDto.getAge());
         }
+    }
+
+    @Test
+    public void dtoTest3() {
+        List<MemberDto> result = queryFactory.select(new QMemberDto(member.username, member.age)).from(member).fetch();
+        assertThat(result.size()).isEqualTo(4);
+    }
+
+    @Test
+    public void distinctTest() {
+        em.persist(new Member("member1", 50));
+        List<String> result1 = queryFactory.select(member.username).from(member).fetch();
+        List<String> result2 = queryFactory.select(member.username).distinct().from(member).fetch();
+
+        assertThat(result1.size()).isEqualTo(5);
+        assertThat(result2.size()).isEqualTo(4);
+    }
+
+    @Test
+    public void deleteTest() {
+        long deletedCnt = queryFactory.delete(member).where(member.age.eq(10), member.username.eq("member1")).execute();
+        em.flush();
+        em.clear();
+        assertThat(deletedCnt).isEqualTo(1);
     }
 }
