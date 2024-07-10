@@ -3,6 +3,8 @@ package study.querydsl;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -19,6 +21,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import study.querydsl.dto.MemberDto;
+import study.querydsl.dto.UserDto;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
 import study.querydsl.entity.Team;
@@ -381,6 +385,52 @@ public class QueryBasicTest {
         List<Tuple> result = queryFactory.select(member.username, member.age).from(member).fetch();
         for (Tuple tuple : result) {
             System.out.println(tuple.get(member.username) + " " + tuple.get(member.age));
+        }
+    }
+
+    @Test
+    @DisplayName("프로퍼티 접근-setter, 필드 접근, 생성자 접근")
+    public void dtoTest1() {
+
+        List<MemberDto> result = em.createQuery(
+                        "select new study.querydsl.dto.MemberDto(m.username, m.age) " +
+                        "from Member m", MemberDto.class)
+                .getResultList();
+
+        List<MemberDto> result1 = queryFactory
+                .select(Projections.bean(MemberDto.class, member.username, member.age))
+                .from(member)
+                .fetch();
+
+        List<MemberDto> result2 = queryFactory
+                .select(Projections.fields(MemberDto.class, member.username, member.age))
+                .from(member)
+                .fetch();
+
+        List<MemberDto> result3 = queryFactory
+                .select(Projections.constructor(MemberDto.class, member.username, member.age))
+                .from(member)
+                .fetch();
+
+        assertThat(result1).isEqualTo(result);
+        assertThat(result2).isEqualTo(result);
+        assertThat(result3).isEqualTo(result);
+    }
+
+
+    @Test
+    public void dtoTest2() {
+        QMember memberSub = new QMember("memberSub");
+        List<UserDto> result = queryFactory.select(Projections.fields(
+                UserDto.class,
+                member.username.as("name"),
+                ExpressionUtils.as(
+                        select(memberSub.age.max()).from(memberSub), "age")
+        )).from(member).fetch();
+
+        for (UserDto userDto : result) {
+            System.out.println("name = " + userDto.getName());
+            System.out.println("age = " + userDto.getAge());
         }
     }
 }
