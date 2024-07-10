@@ -3,6 +3,8 @@ package study.querydsl;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -20,6 +22,7 @@ import study.querydsl.entity.Team;
 
 import java.util.List;
 
+import static com.querydsl.jpa.JPAExpressions.*;
 import static org.assertj.core.api.Assertions.*;
 import static study.querydsl.entity.QMember.member;
 import static study.querydsl.entity.QTeam.team;
@@ -284,5 +287,44 @@ public class QueryBasicTest {
         boolean loaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam());
         assertThat(loaded).as("페치 조인 적용").isTrue();
 
+    }
+
+    @Test
+    public void subQuery() throws Exception {
+        QMember memberSub = new QMember("memberSub");
+        List<Member> result = queryFactory.selectFrom(member)
+                .where(member.age.eq(
+                        select(memberSub.age.max()).from(memberSub)
+                )).fetch();
+        assertThat(result).extracting("age").containsExactly(40);
+
+    }
+
+    @Test
+    public void subQueryGoe() throws Exception {
+        QMember memberSub = new QMember("memberSub");
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .where(member.age.goe(select(memberSub.age.avg())
+                .from(memberSub)))
+                .fetch();
+        assertThat(result).extracting("age").containsExactly(30, 40);
+    }
+
+    @Test
+    public void selectSubQuery() throws Exception {
+        QMember memberSub = new QMember("memberSub");
+        List<Tuple> result = queryFactory.select(member.username,
+                select(memberSub.age.avg())
+                        .from(memberSub)
+        ).from(member)
+        .fetch();
+
+        for (Tuple tuple : result) {
+            String username = tuple.get(member.username);
+            System.out.println("username: " + username);
+            System.out.println("age: " + tuple.get(select(memberSub.age.avg())
+                    .from(memberSub)));
+        }
     }
 }
