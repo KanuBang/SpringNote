@@ -11,6 +11,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPADeleteClause;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -522,6 +523,39 @@ public class QueryBasicTest {
 
     private BooleanExpression allEq(String usernameCond, Integer ageCond) {
         return usernameEq(usernameCond).and(ageEq(ageCond));
+    }
+
+    @Test
+    public void updateTest1() {
+        long cnt = queryFactory.update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(20))
+                .execute();
+        //벌크 연산 처리
+        em.flush();
+        em.clear();
+
+        assertThat(cnt).isEqualTo(1);
+    }
+
+    @Test
+    public void updateTest2() {
+        long cnt = queryFactory.update(member).set(member.age, member.age.add(1)).execute();
+        Integer result = queryFactory.select(member.age).from(member).fetchFirst();
+        assertThat(result).isEqualTo(11);
+    }
+
+    @Test
+    public void updateTest3() {
+        long cnt = queryFactory.update(member).set(member.age, member.age.multiply(2)).execute();
+        Integer result = queryFactory.select(member.age).from(member).fetchFirst();
+        assertThat(result).isEqualTo(20);
+    }
+
+    @Test
+    public void deleteTest2() {
+        long cnt = queryFactory.delete(member).where(member.username.eq("member4")).execute();
+        assertThat(cnt).isEqualTo(1);
     }
 
 }
