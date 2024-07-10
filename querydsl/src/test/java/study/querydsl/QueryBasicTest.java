@@ -1,5 +1,6 @@
 package study.querydsl;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Expression;
@@ -457,5 +458,28 @@ public class QueryBasicTest {
         em.flush();
         em.clear();
         assertThat(deletedCnt).isEqualTo(1);
+    }
+
+    @Test
+    public void 동적쿼리_booleanBuilder() throws Exception {
+        String username = "member1";
+        Integer ageParam = 10;
+        List<Member> result = searchMember1(username, ageParam);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    private List<Member> searchMember1(String usernameCond, Integer ageParamCond) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (usernameCond != null) {
+            builder.and(member.username.eq(usernameCond));
+        }
+
+        if (ageParamCond != null) {
+            builder.and(member.age.eq(ageParamCond));
+        }
+
+        return queryFactory.selectFrom(member).where(builder).fetch();
+
     }
 }
