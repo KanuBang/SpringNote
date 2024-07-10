@@ -3,6 +3,7 @@ package study.querydsl;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -325,6 +326,31 @@ public class QueryBasicTest {
             System.out.println("username: " + username);
             System.out.println("age: " + tuple.get(select(memberSub.age.avg())
                     .from(memberSub)));
+        }
+    }
+
+    @Test
+    public void caseExp1() throws Exception {
+        List<String> result = queryFactory.select(member.age
+                .when(10).then("열살")
+                .when(20).then("스무살")
+                .otherwise("늙은이")).from(member).fetch();
+
+        for (String s : result) {
+            System.out.println("s = " + s);
+        }
+    }
+
+    @Test
+    public void caseExp2() throws Exception {
+        List<String> result = queryFactory.select(new CaseBuilder()
+                .when(member.age.between(0, 20)).then("젊은이")
+                .when(member.age.between(21, 40)).then("늙은이")
+                .otherwise("기")
+        ).from(member).fetch();
+
+        for (String s : result) {
+            System.out.println("s = " + s);
         }
     }
 }
