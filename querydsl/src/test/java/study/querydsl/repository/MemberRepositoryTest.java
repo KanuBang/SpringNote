@@ -3,9 +3,13 @@ package study.querydsl.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.dto.MemberSearchCondition;
@@ -26,6 +30,7 @@ class MemberRepositoryTest {
     MemberRepository memberRepository;
     @PersistenceContext
     EntityManager em;
+
     @Test
     public void searchTest() {
         Team teamA = new Team("teamA");
@@ -48,5 +53,9 @@ class MemberRepositoryTest {
 
         List<MemberTeamDto> result = memberRepository.search(condition);
         assertThat(result).extracting("username").containsExactly("member4");
+
     }
+
+
+
 }
