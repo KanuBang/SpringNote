@@ -1,16 +1,21 @@
 package hello.coreReview.discount;
 
+import hello.coreReview.AppConfig;
 import hello.coreReview.member.Grade;
 import hello.coreReview.member.Member;
-import hello.coreReview.member.MembreServiceImpl;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 class DiscountPolicyTest {
-    DiscountPolicy discountPolicy = new RateDiscountPolicy();
+    DiscountPolicy discountPolicy;
+
+    @BeforeEach
+    public void beforeEach() {
+        AppConfig appConfig = new AppConfig();
+        discountPolicy = appConfig.discountPolicy();
+    }
 
     @Test
     void rate_vip_o() {

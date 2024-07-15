@@ -1,18 +1,27 @@
 package hello.coreReview.discount;
 
+import hello.coreReview.AppConfig;
 import hello.coreReview.member.Grade;
 import hello.coreReview.member.Member;
 import hello.coreReview.member.MemberService;
-import hello.coreReview.member.MembreServiceImpl;
-import org.assertj.core.api.Assertions;
+import hello.coreReview.member.MemberServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class OrderServiceTest {
-    MemberService memberService = new MembreServiceImpl();
-    OrderService orderService = new OrderServiceImpl();
+    MemberService memberService;
+    OrderService orderService;
+
+    @BeforeEach
+    public void beforeEach() {
+        AppConfig appConfig = new AppConfig();
+        memberService = appConfig.memberService();
+        orderService = appConfig.orderService();
+    }
+
+
     @Test
     void createOrder() {
         //given

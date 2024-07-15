@@ -1,14 +1,19 @@
 package hello.coreReview.member;
 
+import hello.coreReview.AppConfig;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class MemberServiceTest {
 
-    // 구현에 의존하고 있다. -> 변경에 용이하지 않다.
-    MemberService memberService = new MembreServiceImpl();
+    MemberService memberService;
+
+    @BeforeEach
+    public void beforeEach() {
+        AppConfig appConfig = new AppConfig();
+        memberService = appConfig.memberService();;
+    }
 
     @Test
     void join() {
