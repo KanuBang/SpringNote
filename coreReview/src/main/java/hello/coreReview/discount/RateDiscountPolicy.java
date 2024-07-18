@@ -1,5 +1,6 @@
 package hello.coreReview.discount;
 
+import hello.coreReview.annotation.MainDiscountPolicy;
 import hello.coreReview.member.Grade;
 import hello.coreReview.member.Member;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -9,7 +10,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Qualifier("rateDiscountPolicy")
-@Primary
+//@Primary
+@MainDiscountPolicy
 public class RateDiscountPolicy implements DiscountPolicy{
     private int discountPercent = 10; //10프로 할인
     @Override

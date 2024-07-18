@@ -1,5 +1,6 @@
 package hello.coreReview.discount;
 
+import hello.coreReview.annotation.MainDiscountPolicy;
 import hello.coreReview.member.Member;
 import hello.coreReview.member.MemberRepository;
 import hello.coreReview.member.MemoryMemberRepository;
@@ -38,7 +39,7 @@ public class OrderServiceImpl implements OrderService{
      */
 
     public OrderServiceImpl(MemberRepository memberRepository,
-                            DiscountPolicy discountPolicy) {
+                            @MainDiscountPolicy DiscountPolicy discountPolicy) {
         this.memberRepository = memberRepository;
         this.discountPolicy = discountPolicy;
     }
