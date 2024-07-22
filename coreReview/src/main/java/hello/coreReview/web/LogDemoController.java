@@ -12,13 +12,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor
 public class LogDemoController {
     private final LogDemoService logDemoService;
-    private final ObjectProvider<MyLogger> myLoggerObjectProvider;
+    private final MyLogger myLogger;
 
     @RequestMapping("log-demo")
     @ResponseBody
     public String logDemo(HttpServletRequest request) {
         String requestURL = request.getRequestURL().toString();
-        MyLogger myLogger = myLoggerObjectProvider.getObject(); // Dependency Lookup -> 이 수간에 Request Scope Bean인 MyLogger 탄생 -> 초기화 콜백
         myLogger.setRequestURL(requestURL);
 
         myLogger.log("controller test");

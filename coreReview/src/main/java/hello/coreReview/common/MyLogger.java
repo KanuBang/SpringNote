@@ -3,12 +3,14 @@ package hello.coreReview.common;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
-@Scope(value = "request")
+@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
+// MyLogger의 가짜 프록시 클래스를 만들어두고 HTTP Request와 상괍 없이 가짜 프록시 클래스를 다른 빈에 미리 주입해둘 수 있다.
 public class MyLogger {
 
     private String uuid;
