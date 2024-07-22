@@ -27,6 +27,9 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 
+	//web 환경
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
 	//JSR-330 Provider
 	implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
 
