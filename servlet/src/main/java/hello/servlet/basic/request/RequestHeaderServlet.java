@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Locale;
 
 @WebServlet(name = "requestHeaderServlet", urlPatterns = "/request-header")
 public class RequestHeaderServlet extends HttpServlet {
@@ -90,6 +91,7 @@ public class RequestHeaderServlet extends HttpServlet {
         System.out.println("request.getQueryString() = " + request.getQueryString());
         System.out.println("request.isSecure() = " + request.isSecure()); //https 사용유무
         System.out.println();
+
     }
 
 
