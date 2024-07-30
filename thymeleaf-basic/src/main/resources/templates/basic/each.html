@@ -27,6 +27,7 @@
         <th>etc</th>
     </tr>
 
+    <!-- 태그 중간 사이에 값을 넣는 이유는 기본값 때문이다.-->
     <tr th:each="user, userStat : ${users}">
         <td th:text="${userStat.count}">username</td>
         <td th:text="${user.username}">username</td>

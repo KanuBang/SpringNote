@@ -97,6 +97,12 @@ public class BasicController {
         return "basic/each";
     }
 
+    @GetMapping("/condition")
+    public String condition(Model model) {
+        addUser(model);
+        return "basic/condition";
+    }
+
     @Data
     static class User {
         private String username;
@@ -119,6 +125,7 @@ public class BasicController {
         list.add(new User("userA", 20));
         list.add(new User("userB", 30));
         list.add(new User("userC", 40));
+        list.add(new User("userD", 10));
         model.addAttribute("users", list);
     }
 }
