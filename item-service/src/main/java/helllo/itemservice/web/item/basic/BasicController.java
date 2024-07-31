@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -60,11 +61,22 @@ public class BasicController {
     `model.addAttribute("hello", item);` 모델에 `hello` 이름으로저장
      */
     @PostMapping("/add")
-    public String addItemV2(@ModelAttribute("item") Item item, Model model) {
-        itemRepository.save(item);
+    public String addItemV2(@ModelAttribute("item") Item item, RedirectAttributes redirectAttributes) {
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
         //return "basic/item";
-        return "redirect:/basic/items/"+item.getId();
+        return "redirect:/basic/items/{itemId}";
     }
+    /*
+    **RedirectAttributes**
+    `RedirectAttributes` 를 사용하면 URL 인코딩도 해주고, `pathVariable` , 쿼리 파라미터까지 처리해준다.
+    `redirect:/basic/items/{itemId}`
+     pathVariable 바인딩: `{itemId}`
+     나머지는 쿼리 파라미터로 처리: `?status=true`
+
+     ex) http://localhost:8080/basic/items/4?status=true
+     */
 
     @GetMapping("/{itemId}/edit")
     public String editForm(@PathVariable("itemId") Long itemId, Model model) {
@@ -78,6 +90,7 @@ public class BasicController {
         itemRepository.update(itemId, item);
         return "redirect:/basic/items/{itemId}";
     }
+
 
     @PostConstruct
     public void init(){
