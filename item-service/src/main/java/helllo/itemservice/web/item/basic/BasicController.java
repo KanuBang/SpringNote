@@ -62,7 +62,8 @@ public class BasicController {
     @PostMapping("/add")
     public String addItemV2(@ModelAttribute("item") Item item, Model model) {
         itemRepository.save(item);
-        return "basic/item";
+        //return "basic/item";
+        return "redirect:/basic/items/"+item.getId();
     }
 
     @GetMapping("/{itemId}/edit")
