@@ -51,7 +51,19 @@ public class BasicController {
 
         return "basic/item";
     }
+    */
+
+    // `@ModelAttribute` 는 `Item` 객체를 생성하고, 요청 파라미터의 값을 프로퍼티 접근법(setXxx)으로 입력해준다.
+    // 바로 모델(Model)에 `@ModelAttribute` 로 지정한 객체를 자동으로 넣어준다.
+    /*
+    `@ModelAttribute("hello") Item item` 이름을 `hello` 로 지정
+    `model.addAttribute("hello", item);` 모델에 `hello` 이름으로저장
      */
+    @PostMapping("/add")
+    public String addItemV2(@ModelAttribute("item") Item item, Model model) {
+        itemRepository.save(item);
+        return "basic/item";
+    }
 
     @PostConstruct
     public void init(){
